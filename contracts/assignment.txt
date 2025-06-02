@@ -1,0 +1,13 @@
+2.1.
+```bash
+cc0 num.c0 num-test.c0
+./a.out
+```
+
+2.2.
+```bash
+coin num.c0 num-test.c0
+```
+then type `main();` to the interactive repl
+
+3.

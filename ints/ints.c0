@@ -1,0 +1,178 @@
+/*
+Theory part
+
+Machine words:
+- computers store everything in bits
+- computers process batches of k bits in parallel, usually k = 32
+- a batch of k (32) bits is called computer words
+- computers process whole words very easily but find it hard to process part of word <32bits
+- most programming languages use a word to represent an int
+		for example: C0 uses 32 bits to represent an int
+			     C uses 4 bytes == 32 bits to represent an int (sizeof(int))
+
+- numbers in a computer is finite
+- in a n-bits computer, an int can only represent 2^n integers, the biggest integer is 2^n - 1 
+
+- overflow may happens if our word can't store a big number
+	example: 4 bits computer can only store integer smaller than 2^4 - 1, overflow happens when we try to store any n >= 2^4
+
+- solution: ignores the overflow bits so 9 + 9 = 10011 = 0011 = 3
+						 ^ 
+					     ignore this
+
+- x + x - x always equal to x even overflow happens
+	for example: x = 11,
+		     x + x will equals 22 and overflows to 6
+		     6 - 11 = -5
+		     -5 overflow to 11 :)
+
+** Two complements signed integer **
+
+- in a k bit word machine, a word can store a number range from [-2^(k-1) to 2^(k-1) - 1] and the leftmost bit indicate the number's sign
+	notable numbers: 0 is 000...000
+			-1 is 111...111 
+
+- overflows if the mathematical result is outside of the range [-2^(k-1) to 2^(k-1) - 1] (if it smaller than -2^(k-1) it is called underflow)
+- in two's complement system the leftmost bit is signed negative when converting to decimal
+	101 = 1*(-2^2) + 0*(2^1) + 1*(2^0)
+
+- code that use {+,-,*} is safe with modular expression (overflow is ok still get the right result)
+- EXTRA careful when use >, >=, <, <=
+
+- DIVISION: x / y and also x % y
+	  //@requires y != 0 			   ---> classic division by zero
+	  //@requires !(x == int_min() && y == -1) ---> the computer chip will get mad!!!1!!1
+	  note: x / y always rounds to zero
+
+- Using 32bits integer to represent an pixel: bit 0-7 gives intensitiy of blue
+					      bit 8-15 gives intensity of green
+					      bit 16-23 gives intensity of red
+					      bit 23-31 gives the opacity
+	
+- Use hexadecimal is better when represent pixel!
+- Bitwise operator manages bits of a bit pattern (and, or, not, xor) 
+
+* Bitwise examples
+> set pixel to maximum opaque: p | 0xFF000000
+> return the pixel with the same green component as p
+  and the same alpha, red and blue component as q 
+
+int franken_pixel(int p, int q) {
+	int extract_green = p & 0x0000FF00;
+	int extract_arb = q & 0xFFFF00FF;
+	return extract_green | extract_arb;
+}
+
+- XOR is used in cryptography
+- (m ^ k) ^ k = m --> encrypt a message by xor it with k(ey), we decrypt it by xor it with k(ey) again
+
+* Moving bits around
+- Syntax: leftshift: b << k //@requires 0 <= k && k <= 31
+-	  rightshift: b >> k //@requires 0 <= k && k <= 31
+
+Example: return a pixel whose red, and green components has the same intensity as its blue component
+
+int blue_everywhere(int p) {
+	int isolate_blue = p & 0x000000FF;
+	int isolate_alpha = p & 0xFF000000;
+	int result 
+
+	// build green
+	result = (isolate_blue << 8) | isolate_blue;
+	// build red
+	result = (isolate_blue << 16) | result;
+	return alpha | result
+}
+
+- Right shift: need to care about sign in two's complement system 
+	if the sign is 0 then replace all the missing value of the shifting by 0, 
+	otherwise if the sign bit is 1 then replace all the missing value of the shifting by 1
+
+int swap_alpha_red(int p) {
+	int green_blue = p & 0x0000FFFF;
+	int red = p & 0x00FF0000;
+	int alpha = p & 0xFF000000;
+	return green_blue | (red << 8) | (alpha >> 8);
+}
+
+useful mix and match of bitwise and arithmetic
+- negation of x: -x = ~x + 1
+- compute x * POW(2,k) is x << k 
+- compute x / POW(2,k) is x >> k (wrong division)
+
+=====================================================================
+
+*/
+
+// Ex1: DONE. removed because library conflicts with Ex2
+
+// Ex2: DONE.
+
+#use <string>
+
+string int2hex(int x);
+
+string hex_digit2string(int h)
+//@requires 0 <= h && h <= 15;
+{
+	if (h <= 9) return string_fromchar(char_chr(48 + h));
+	else return string_fromchar(char_chr(65 + (h - 10)));
+}
+
+string int2hex(int h) 
+{
+	string rsf = "";
+	for (int i = 0; i < 8; i++)
+	{
+		rsf = string_join(hex_digit2string(h & 0x0000000F), rsf);
+		h = h >> 4;
+	}
+	return rsf;
+}
+
+#use <util>
+// Ex3:
+/*int lsr(int n, int k)
+//@requires 0 <= k && k < 32;
+{
+	int mask = 0;
+	n = n >> k;
+	for (int i = 0; i < 32 - k; i++) 
+	{
+		mask = mask << 1;
+		mask = mask | 0x1;
+	}
+	return n & mask;
+}*/
+
+// Ex4:
+
+int POW(int x, int y) 
+//@requires y >= 0;
+{	
+	if (y == 0) return 1;
+	int rec_cal = POW(x, y - 1);
+	int result = rec_cal * x;
+	if ((rec_cal > 0 && x > 0 && result < 0) || (rec_cal < 0 && x < 0 && result > 0)) error("Overflow");
+	return result;
+}
+
+int f(int x, int y) 
+//@requires y >= 0;
+//@ensures \result == POW(x,y);
+{
+	int b = x;
+	int e = y;
+	int r = 1;
+	while (e > 1) 
+	//@loop_invariant POW(b, e) * r == POW(x ,y);
+	//@loop_invariant e >= 0;
+	{
+		if (e % 2 == 1) {
+			r = b * r;
+		}
+		b = b * b;
+		e = e / 2;
+	}
+	return r * b;
+}

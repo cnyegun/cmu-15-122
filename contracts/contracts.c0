@@ -1,0 +1,248 @@
+int POW(int x, int y) 
+//@requires y >= 0;
+{
+	if (y == 0) return 1;
+	return POW(x, y - 1) * x;
+}
+
+int f(int x, int y) 
+//@requires y >= 0;
+//@ensures \result == POW(x,y);
+{
+	int b = x;
+	int e = y;
+	int r = 1;
+	while (e > 1) 
+	//@loop_invariant POW(b, e) * r == POW(x ,y);
+	//@loop_invariant e >= 0;
+	{
+		if (e % 2 == 1) {
+			r = b * r;
+		}
+		b = b * b;
+		e = e / 2;
+	}
+	return r * b;
+}
+
+
+// NOT a good code because: 
+//  - No comments
+//  - Names are non-descript:
+//      (1) the function is called f
+//      (2) the variables are called x, y, r
+
+// The function
+
+// What does it do? -> Find out using experiments (call f with many outputs and guess)
+
+// Loading this file to the C0 interpreter - coin
+// ERROR: try x < 0   --> error
+//	  try y <= 0  --> error
+
+/*
+===================================================================
+
+** Precondition:
+
+a restriction over a function's input is called a precondition
+in most language we will write comments for this.. and hope the caller reads it
+
+in c0 we can write an executable contract directive
+//@requires y >= 0;
+- need to use -d flag when running `coin`
+
+** Postcondition:
+
+a contract that is checked after the execution of the function is done is called postcondition
+
+syntax: //@ensures <some_condition>;
+
+special keyword: \result
+
+--> If a call violates the function's postcondition, the function has a BUG, or is INCORRECT
+
+** Blame:
+
+- if the precondition fail -> bug is in the caller's code -> unsafe call
+- if the postcondition fail -> bug is in the function's code -> incorrect function
+
+*-> Learn the methods to make sure that the code we write is #safe and #correct
+
+** The Caller's Perspective
+
+*preconditions -> valid inputs
+ postconditions -> what it does*
+
+The caller should be able to use it by looking at just function name, arguments and the pre&post conditions. No need to look at the implementation
+
+** Abstraction
+
+Split a complex system to small chunks that can be understood independently
+-> very important in CS/Programming and other subject in real life
+
+** The Function's Perspective
+
+The contract act as a guide to implement the function's body.
+Always write the contract first. (Just like TDD in HtDP)
+
+===================================================================
+
+** Loop Invariants
+
+* Loop invariants are checked just before the loop guard is tested
+* if the loop body runs n times, the loop invariants is check n times (all n+1 times must be true)
+* the loop guard also tested n+1 times too, true the first n times and false the last time
+* when we exit the loop, the loop invariants must hold true and the loop guard is false
+
+Still need to prove all the loop invariants by "point-to reasoning"
+
+** Proving a Loop Invariant Valid
+
+* two steps: (1) INIT, shows that the loop invariant is true just before tested the loop guard the first time.
+	     (2) PRES, shows that the loop invariant is preserved by the loop at the end of each iteration.
+
+_note_: it may become false temporarily in the middle of the loop body, doesn't matter
+
+Prove the validity of LI e >= 0
+
+A. y >= 0 (function's precondition)
+B. e = y (assingment)
+C. e >= 0 by math on A and B
+
+===================================================================
+
+** Exercises
+
+Ex1: any input whose y is an odd number will fail that loop invariant guess
+	for example: f(2,5);
+
+Ex2:
+*/
+
+int foo(int x)
+//@requires x >= 0;
+//@ensures \result == (POW(2, x) - 1);
+{
+	int p = 0;
+	for (int i = 0; i < x; i++) 
+	//@loop_invariant POW(2, i) - 1 == p;
+	//@loop_invariant 0 <= i && i <= x;
+	{ 
+		p += POW(2, i);
+	}
+	return p;
+}
+
+/*
+Ex3:
+GCD(a,b) is largest integer d such that 
+(a % d == 0) && (b % d == 0)
+*/
+
+int min(int a, int b)
+//@ensures (\result == a && a <= b) || (\result == b && b <= a);
+{
+	return a < b ? a : b;
+}
+
+int GCD(int a, int b)
+//@requires a > 0 && b > 0;
+//@ensures \result >= 1;
+//@ensures a % \result == 0 && b % \result == 0;
+{
+	int d = min(a,b);
+
+	while (d > 1)
+	//@loop_invariant d >= 1;
+	{
+		if (a % d == 0 && b % d == 0) return d;
+		d = d - 1;
+	}
+	return d;
+}
+
+/*
+a.[INIT]: d = min(a, b)
+	  a > 0
+	  b > 0
+	  => min(a, b) > 0
+	  => d > 0 && d :: int => d >= 1
+
+b.[PRES]: d > 1; by loop guard
+	  d' = d - 1; by line 13
+	  d' >= 1;
+	
+c.[EXIT]: recall: when a loop exits, the loop invariant(s) must hold true and the loop guard(s) must hold false
+	  d >= 1; by loop_invariant
+	  d <= 1; by loop_guard negation
+	  => d == 1
+	  n % 1 == 0 for any n > 0
+d.[TERM]: d > 1 by loop guard
+	  d' < d by line 13
+	  => each iteration d strictly decreasing until it reached d == 1 and fail the loop guard
+
+e. d >= 1 by loop_invariant 
+   a % d == 0 && b % d == 0 by if condition
+
+*/
+
+int euclid(int a, int b)
+//@requires a >= 1 && b >= 1
+//@ensures \result == GCD(a, b);
+{
+	int x = a;
+	int y = b;
+
+	while (x != y)
+	//@loop_invariant x >= 1 && y >= 1;
+	//@loop_invariant GCD(x, y) == GCD(a, b);
+	{
+		if (x > y)
+			x = x - y;
+		else
+			y = y - x;
+	}
+	//@assert x == y;
+	return x;
+}
+
+/*
+
+a. GCD(a, b) is safe by line 2
+   GCD(x, y) is safe by line 9
+
+b. [INIT]: assume GCD(x, y) and GCD(a, b) are safe
+	   x = a by line 5
+	   y = b by line 6
+	   => x > 0 && y > 0 by line 2
+	   => GCD(x, y) == GCD(a, b) by math 
+
+
+c. [PRES]: 
+given x != y
+
+case x > y then x := x - y 
+--> gcd(x - y, y) == gcd(x, y)
+--> given x > y and x,y >= 1, the smallest value of x - y is 1 therefore satisfies
+
+case y > x then y := y - x
+--> gcd(x, y - x) == gcd(x, y)
+--> given y > x and x,y >= 1, the smallest value of y - x is 1 therefore satisfies
+
+d. [EXIT]: x >= 1 && y >= 1;
+	   GCD(x', y') == GCD(a, b);
+	   x' == y'
+	   --> x' == GCD(x', y') == GCD(a, b)
+fix:
+	A. x == y by loop guard negation
+	B. GCD(x,x) == GCD(a,b) by loop_invariant
+	C. GCD(n,n) == n for any n > 0 by math
+	D. x == GCD(a,b) by math on B,C
+	E. \result == x by line 18
+	F. \result == GCD(a,b) by math on D,E
+
+e. [TERM]: x and y will get strictly smaller until it equals each other or become 1
+it can't get smaller than 2. lower bound == 2
+
+*/
