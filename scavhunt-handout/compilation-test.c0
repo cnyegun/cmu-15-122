@@ -1,0 +1,34 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+/* DO NOT MODIFY THIS FILE */
+
+bool test0(string input1, string input2, string output) {
+  return string_equal(fixme0(input1, input2), output);
+}
+
+/* Test cases for compilation.c0 */
+int main() {
+
+  // fixme0 tests
+  if (!test0("hello", "bye", "bye"))     return 1;
+  if (!test0("bye", "hello", "bye"))     return 1;
+  if (!test0("Honk!", "goose", "goose")) return 1;
+  if (!test0("goose", "Honk!", "Honk!")) return 1;
+  if (!test0("", "wow", ""))             return 1;
+  if (!test0("wow", "", ""))             return 1;
+
+  // fixme1 tests
+  if (!(fixme1(true, false) || true))    return 1;
+  if (fixme1(true, true))                return 1;
+  if (!fixme1(true, false))              return 1;
+  if (!fixme1(false, true))              return 1;
+  if (fixme1(false, false))              return 1;
+
+  // fixme_later test
+  fixme_later();
+
+  printf("Congratulations! Well Done :)\n");
+  return 0;
+}

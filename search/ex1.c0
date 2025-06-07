@@ -1,0 +1,42 @@
+bool ge_seg(int idx, int[] A, int lo, int hi)
+//@requires 0 <= lo && lo < hi && hi <= \length(A);
+//@requires 0 <= idx && idx < \length(A);
+{
+    for (int i = lo; i < hi; i++)
+    //@loop_invariant lo <= i && i <= hi;
+    {
+        if (A[i] > A[idx])
+            return false;
+    }
+    return true;
+}
+
+int find_max(int[] A, int n)
+//@requires 0 < n && n == \length(A);
+//@ensures 0 <= \result && \result < \length(A);
+//@ensures ge_seg(\result, A, 0, \length(A));
+{
+    int max_index = 0;
+    int max_num = A[0];
+    
+    for (int i = 1; i < n; i++)
+    //@loop_invariant 1 <= i && i <= n;
+    {
+        if (A[i] > max_num) {
+            max_num = A[i];
+            max_index = i;
+        }
+        
+    }
+    return max_index;
+}
+
+/*
+1. A[0] is safe by line 2
+2. A[i] is safe by line 2, 7 :: 1 <= i && i < n when accessing A[i] 
+3. find_max(A,4) returns 0. Because condition in line 10 is always false and max_index will remains unchanged
+4. find_max(B,5) will return 1. After index 1 there is no A[i] that satisfies the condition on line 10
+5. above
+*/
+
+

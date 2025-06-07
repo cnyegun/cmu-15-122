@@ -1,0 +1,41 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+// ALL fixes are ADDITIONS to the file.
+// You should NOT be deleting anything from this file.
+
+
+#use <conio>
+#use <string>
+// HINT: What library do we need to be able to use string functions
+//       like string_length?
+
+string fixme0(string a, string b) {
+  int a_len = string_length(a);
+  int b_len = string_length(b);
+
+  if (a_len < b_len) {
+    return a;
+  }
+  else {
+    return b;
+  }
+}
+
+// HINT: What are the types of the inputs and outputs?
+//       What sorts of operators can we use for this type?
+bool fixme1(bool a, bool b) {
+  return (a || b) && (!a || !b);
+}
+
+
+
+// There are NO SYNTAX ERRORS in the next function, but it has a
+// SAFETY ISSUE that will cause execution to abort.  Identify this
+// issue and fix it by deleting a single character.
+// HINT: What inputs are valid for string_charat?
+char fixme_later() {
+  string s = "I am a 26-character string";
+  return string_charat(s, 12);
+}

@@ -1,0 +1,21 @@
+
+int lsr(int n, int k)
+//@requires 0 <= k && k < 32;
+{
+	int mask = 0;
+	n = n >> k;
+	for (int i = 0; i < 32 - k; i++) 
+	{
+		mask = mask << 1;
+		mask = mask | 0x1;
+	}
+	return n & mask;
+}
+
+int pixel_by_half(int p) {
+    int alpha = (lsr((0xFF000000 & p), 24) / 2) << 24;
+    int red = (lsr((0x00FF0000 & p), 16) / 2) << 16;
+    int green = (lsr((0x0000FF00 & p), 8) / 2) << 8;
+    int blue = (0x000000FF & p) / 2;
+    return alpha | red | green | blue;
+}

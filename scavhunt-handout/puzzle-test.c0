@@ -1,0 +1,51 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+/*
+ * Unit tests for the string puzzles
+ *
+ */
+
+int main() {
+
+  /***************/
+  /* tests for f */
+  /***************/
+
+  // Normally, we write unit tests that assert that the result we're
+  // expecting is the result that we're going to get:
+  assert(f("", "") == 0);
+  assert(f("", "abc") == 0);
+  assert(f("abc", "") == 0);
+  assert(f("abc", "def") == 0);
+  assert(f("abc", "aa") == 1);
+  assert(f("abc", "adef") == 1);
+  assert(f("abc", "abe") == 2);
+  assert(f("abc", "abed") == 2);
+  assert(f("abc", "abc") == 3);
+  assert(f("abc", "abcd") == 3);
+
+  // It's also possible to just run the function, ignoring the result,
+  // and let the contracts take care of checking the result.
+  f("abcd", "accdd");
+  f("abcd", "abefg");
+  f("abcd", "abecd");
+
+  /***************/
+  /* tests for g */
+  /***************/
+    
+    assert(g("ab") == 0);
+    assert(g("abc") == 0);
+    assert(g("aabb") == 1);
+    assert(g("aaaaxaad") == 3); 
+
+  /***************/
+  /* tests for h */
+  /***************/
+
+
+  printf("All tests passed!");
+  return 0;
+}

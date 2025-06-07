@@ -1,0 +1,15 @@
+#use <conio>
+
+int main() 
+{
+    int[] arr = alloc_array(int, 5);
+    arr[0] = 1;
+    arr[1] = 3;
+    arr[2] = 2;
+    arr[3] = 3;
+    arr[4] = 1;
+
+    assert(find_max(arr, 5) == 1);
+    print("All test passed\n");
+    return 0;
+}

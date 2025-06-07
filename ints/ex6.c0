@@ -1,0 +1,5 @@
+
+int opacity(int p)
+{
+    return p | 0xff000000;
+}

@@ -1,0 +1,31 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+// Allows you to use I/O functions like printf
+#use <conio>
+// Allows you to use string functions like string_join
+#use <string>
+// Allows you to use utility functions like abs() and min()
+#use <util>
+
+string greet(string salutation, string entity) {
+  string str = salutation;
+  str = string_join(str, ", ");
+  str = string_join(str, entity);
+  str = string_join(str, "!");
+  return str;
+}
+
+int factorial(int n)
+//@requires n >= 0;
+{
+  int result = 1;      /* line 1 */
+  int i = 1;           /* line 2 */
+  while (i <= n) {     /* line 3 */
+    result = result*i; /* line 4 */
+    i = i+1;           /* line 5 */
+  }
+  return result;       /* line 6 */
+}
+

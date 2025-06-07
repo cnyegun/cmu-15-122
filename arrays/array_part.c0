@@ -1,0 +1,70 @@
+#use <conio>
+
+int[] cubes(int n) 
+//@requires n >= 0;
+//@ensures \length(\result) == n;
+{
+    int[] A = alloc_array(int, n);
+    
+    for (int  i = 0; i < n; i++) 
+    //@loop_invariant (0 <= i);
+    {
+        A[i] = i * i * i;
+    }
+    
+    return A;
+}
+
+void print_array(int[] A, int length)
+//@requires length > 0;
+{
+    print("[");
+    for (int i = 0; i < length; i++) 
+    {
+        printint(A[i]);
+        print(",");
+    }
+    print("]\n");
+}
+
+bool same_segs(int[] A, int loA, int hiA,
+               int[] B, int loB, int hiB)
+//@requires (0 <= loA && loA <= hiA && hiA <= \length(A));
+//@requires (0 <= loB && loB <= hiB && hiB <= \length(B));
+//@requires hiA - loA == hiB - loB;
+{
+    int i = loA;
+    int j = loB;
+
+    while(i < hiA)
+    //@loop_invariant loA <= i && i <= hiA;
+    //@loop_invariant loB <= j && j <= hiB;
+    //@loop_invariant hiA - i == hiB - j;
+    {
+        //@assert j < hiB;
+        if (A[i] != B[j]) return false;
+        i++;
+        j++;
+    }
+    
+    return true;
+}
+
+int[] array_part(int[] A, int lo, int hi) 
+//@requires 0 <= lo && lo <= hi && hi <= \length(A);
+//@ensures same_segs(A, lo, hi, \result, 0, hi - lo);
+{
+    int rsf_length = hi - lo;
+
+    int[] rsf = alloc_array(int, rsf_length);
+
+    for (int i = 0; i < rsf_length; i++)
+    //@loop_invariant i >= 0;
+    //@loop_invariant same_segs(A, lo, lo + i, rsf, 0, i);
+    {
+        rsf[i] = A[lo + i];
+    }
+
+    return rsf;
+}
+

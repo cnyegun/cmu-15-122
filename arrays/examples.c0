@@ -1,0 +1,29 @@
+#use <conio>
+
+int[] cubes(int n) 
+//@requires n >= 0;
+//@ensures \length(\result) == n;
+{
+    int[] A = alloc_array(int, n);
+    
+    for (int  i = 0; i < n; i++) 
+    //@loop_invariant (0 <= i)
+    {
+        A[i] = i * i * i;
+    }
+    
+    return A;
+}
+
+void print_array(int[] A, int length)
+//@requires length > 0;
+{
+    print("[");
+    for (int i = 0; i < length; i++) 
+    {
+        printint(A[i]);
+        print(",");
+    }
+    print("]\n");
+}
+

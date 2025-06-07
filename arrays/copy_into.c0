@@ -1,0 +1,135 @@
+#use <conio>
+
+int[] cubes(int n) 
+//@requires n >= 0;
+//@ensures \length(\result) == n;
+{
+    int[] A = alloc_array(int, n);
+    
+    for (int  i = 0; i < n; i++) 
+    //@loop_invariant (0 <= i);
+    {
+        A[i] = i * i * i;
+    }
+    
+    return A;
+}
+
+void print_array(int[] A, int length)
+//@requires length > 0;
+{
+    print("[");
+    for (int i = 0; i < length; i++) 
+    {
+        printint(A[i]);
+        print(",");
+    }
+    print("]\n");
+}
+
+bool same_segs(int[] A, int loA, int hiA,
+               int[] B, int loB, int hiB)
+//@requires (0 <= loA && loA <= hiA && hiA <= \length(A));
+//@requires (0 <= loB && loB <= hiB && hiB <= \length(B));
+//@requires hiA - loA == hiB - loB;
+{
+    int i = loA;
+    int j = loB;
+
+    while(i < hiA)
+    //@loop_invariant loA <= i && i <= hiA;
+    //@loop_invariant loB <= j && j <= hiB;
+    //@loop_invariant hiA - i == hiB - j;
+    {
+        //@assert j < hiB;
+        if (A[i] != B[j]) return false;
+        i++;
+        j++;
+    }
+    
+    return true;
+}
+
+/*
+Write a function copy_into that
+copies a part of a given array source, namely n elements starting at position i,
+into another given array target, starting at position j.
+
+As an extra service, make your function return the last position in the target array
+that it entered data into, or -1 if no such position exists. Develop a specification
+and loop invariants for this function. Prove that it works correctly by checking the
+loop invariant and proving array bounds.
+*/
+
+// copy_into([1,3,5,7,9], 2, 3, [2,4,6,8,0,1], 1); => [2,5,7,9,0,1]
+
+int copy_into(int[] source, int i, int n, int[] target, int j)
+//@requires 0 <= i && i < \length(source);
+//@requires 0 <= j && j < \length(target);
+//@requires i + n <= \length(source);
+//@requires j + n <= \length(target);
+//@requires n >= 0;
+//@ensures (n == 0 && \result == -1) || (n > 0 && (\result == j + n - 1));
+//@ensures same_segs(source, i, i + n, target, j, j + n);
+{
+    for (int z = 0; z < n; z++) 
+    //@loop_invariant 0 <= z && z <= n;
+    //@loop_invariant same_segs(source, i, i + z, target, j, j + z);
+    {
+        target[j + z] = source[i + z];
+    }
+    if (n == 0) return -1;
+    return j + n - 1;
+}
+
+// PROOF OF CORRECTNESS 
+/* 
+==INIT==
+> to show: 0 < z && z <= n;
+    A. n >= 0 by line 71
+    B. z = 0 by line 75
+    C. z >= 0 by line 75
+    D. z <= n by math on A, B
+    E. 0 <= z <= n by math on C, D
+> to show: same_segs(source, i, i + z, target, j, j + z);
+    A. z = 0 by line 75
+    B. same_segs(source, i, i, target, j, j) = true by definition
+
+==PRES==
+> assume: 0 <= z && z <= n
+> to show: 0 <= z' && z' <= n
+    A. z' = z + 1 by line 75
+    B. z' > z by math on A
+    C. z >= 0 by assumption
+    D. z' >= 0 by math on B, C
+    --
+    A. z < n by line 75 loop guard
+    B. z' = z + 1 by line 75
+    D. z' <= n by math on A, B
+
+==EXIT==
+> assume: same_segs(source, i, i + z, target, j, j + z)
+> to show: same_segs(source, i, i + n, target, j, j + n);
+    A. z >= n by loop guard
+    B. z <= n by line 76
+    C. z = n by math on A, B
+    D. same_segs(source, i, i + z, target, j, j + z) by assumption
+    E. same_segs(source, i, i + n, target, j, j + n) by math on C, D
+
+> to show: 
+    case 1: if the function returns on line 81: 
+        A. n == 0
+        B. \result == -1 
+        C. n == 0 && \result == -1
+    case 2: if the function returns on line 82:
+        A. n >= 0
+        B. n != 0
+        C. n > 0 by math on A, B
+        D. \result == j + n - 1
+        E. n > 0 && \result == j + n - 1 by C, D
+
+==TERM==
+> at each iteration z keep increasing and couldn't exceed n, the loop guard will false when z = n
+*/
+
+
