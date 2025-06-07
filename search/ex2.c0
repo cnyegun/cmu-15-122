@@ -12,6 +12,17 @@ void doubling(int[] A, int[] B, int n)
 
 /*
 
-1. It will always satisfies because if it overflown it will still satisfies. I'll simplify it by put 
-
+1. It will always satisfies because if it overflown it will still satisfies. 
+2.
+assume: \length(B) = 2*n
+to show: 0 <= 2*i + 1 < 2*n
+A. 0 <= i < n by line 5
+B. 0 <= 2*i + 1 by math on A (no overflow by line 2)
+D. i <= n - 1 by math on A
+   2*i <= 2(n - 1) 
+   2*i <= 2n - 2
+   2*i + 1 <= 2n - 1
+   2*i + 1 < 2n (integers) 
+    
+2. 
 */
