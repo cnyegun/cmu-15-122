@@ -1,0 +1,17 @@
+#use <util>
+int no_overflow_add(int a, int b)
+/*@requires (a > 0 && b > 0 && b <= int_max() - a)
+         || (a < 0 && b < 0 && b >= int_min() - a)
+         || (a <= 0 && b >= 0)
+         || (a >= 0 && b <= 0);
+@*/
+{
+    return a + b;
+}
+
+int get_sign_bit(int x)
+//@ensures \result == 0 || \result == 1;
+{
+    return (x >> 31) & 1;
+}
+
