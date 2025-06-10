@@ -1,0 +1,114 @@
+#use <conio>
+
+int function1(int[] A, int n)
+//@requires n == \length(A);
+{
+    int count = 0;                          // O(1)
+    for (int i = 0; i < n; i++) {           // O(n)
+        for (int j = 0; j < n; j++) {       // O(n)
+            count = count + A[j] * (i-1);   // O(1)
+        }
+    }
+    return count;                           // O(1)
+}
+
+// -> n(n + 1) + 2
+// Overall: O(n^2)
+
+int function2(int[] A, int n)
+//@requires (n == \length(A));
+{
+    int count = n;
+    int k = 5;
+    for (int i = 0; i < k; i++) {       // O(1)
+        for (int j = 0; j < k; j++) {   // O(1)
+            count = count + i * (j+1);
+        }
+    }
+    return count;
+}
+
+// Overall: O(1)
+
+/*
+
+Exercise 2:
+1. O(x^4)
+2. O(x^2 + y)
+3. O(2^n)
+4. O( (m + n)logn )
+5. O(y) 
+6. O(1)
+
+
+Exercise 3:
+A. max(x,y) <= x + y
+   max(x,y) elem of O(x + y)
+B. x + y <= 2*max(x,y)
+   x + y elem of O(2*max(x,y))
+
+Exercise 4:
+
+[2,3,4|9,8,6,7,5]
+[2,3,4,5|8,6,7,9]
+[2,3,4,5,6|8,7,9]
+[2,3,4,5,6,7,8,9]
+
+    5 swaps
+    4 + 3 + 2 + 1 comparisons
+
+*/
+
+// Exercise 5:
+
+void print_array(int[] A, int n)
+//@requires n == \length(A);
+{
+    print("[");
+    for(int i = 0; i < n; i++)
+    {
+        printint(A[i]);
+        if (i != (n - 1))
+            print(",");
+    }
+    print("]\n");
+}
+
+void insertion_sort(int[] A, int n)
+//@requires n == \length(A);
+//@ensures is_sorted(A, 0, n);
+{
+    for (int i = 0; i < n; i++)
+    //@loop_invariant 0 <= i && i <= n;
+    //@loop_invariant is_sorted(A, 0, i);
+    {
+        int j = i;
+
+        while (j > 0 && A[j] < A[j - 1])
+        //@loop_invariant 0 <= j && j <= i;
+        //@loop_invariant is_sorted(A, 0, j);
+        //@loop_invariant is_sorted(A, j, i + 1);
+        {
+            swap(A, j - 1, j);
+            j--;
+        }
+    }
+}
+
+
+void test_5()
+{
+    int[] A = alloc_array(int, 4);
+    A[0] = 2;
+    A[1] = 4;
+    A[2] = 5;
+    A[3] = 3;
+    
+    print_array(A, 4);
+
+    insertion_sort(A, 4);    
+
+    assert(is_sorted(A, 0, 4));
+    
+    println("All tests passed");
+}
