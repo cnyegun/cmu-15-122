@@ -1,0 +1,116 @@
+#use <util>
+#use <conio>
+
+int find_min(int[] A, int lo, int hi)
+//@requires 0 <= lo && lo < hi && hi <= \length(A);
+//@ensures lo <= \result && \result < hi && le_seg(A[\result], A, lo, hi);
+{
+    int min_index = lo;
+    for (int i = lo + 1; i < hi; i++)
+    //@loop_invariant lo < i && i <= hi;
+    //@loop_invariant le_seg(A[min_index], A, lo, i);
+    {
+        if (A[i] < A[min_index])
+            min_index = i;
+    }
+    return min_index;
+}
+
+void sort(int[] A, int lo, int hi)
+//@requires 0 <= lo && lo <= hi && hi <= \length(A);
+//@ensures is_sorted(A, lo, hi);
+{
+    for (int i = lo; i < hi; i++)
+    //@loop_invariant lo <= i && i <= hi
+    //@loop_invariant is_sorted(A, lo, i);
+    //@loop_invariant le_segs(A, lo, i, A, i, hi); 
+    {
+        int min_idx = find_min(A, i, hi);
+        swap(A, i, min_idx);
+    }
+}
+
+/*
+SAFETY:
+- find_min(A, i, hi)
+    to show: 0 <= i && i < hi && hi <= \length(A)
+A. hi <= length(A) by line 20
+B. i < hi by line 23
+C. 0 <= lo by line 20
+D. lo <= i by line 24
+E. 0 <= i by math on C, D
+
+- swap(A, i, min_idx)
+    to show: 0 <= min_idx && min_idx < \length(A);
+A. 0 <= lo by line 20
+B. hi <= \length(A) by line 20
+C. lo <= min_idx by postcondition of find_min
+D. min_idx < hi by postcondition of find_min
+E. 0 <= min_idx by math on A, B
+F. min_idx < \length(A) by math on B, D
+
+CORRECT:
+    to show: is_sorted(A, lo, hi)
+    assume: LIs are correct
+A. i >= hi by loop guard
+B. i <= hi by line 24
+C. i = hi by math on A, B
+D. is_sorted(A, lo, hi) by line 25 and C
+
+LOOP INVARIANT:
+- init
+    to show: lo <= i && i <= hi
+A. i = lo by line 23
+B. lo <= lo by math on A
+C. lo <= hi by line 20 and A
+
+    to show: is_sorted(A, lo, lo)
+A. by math (empty interval)
+B. A[lo, lo) <= A[lo, hi) by math (empty interval)
+
+- pres
+    assume: lo <= i && i <= hi
+    to show: lo <= i' && i' <= hi
+A. i' = i + 1 by line 23
+B. i' >= i by math on A
+C. i >= lo by assumption
+D. lo <= i' by math on B, C
+F. i < hi by loop guard
+G. i' <= hi by math on A, F
+
+    assume: is_sorted(A, lo, i)
+    to show: is_sorted(A, lo, i')
+A. i' = i + 1 by line 23
+B. A[lo, i) is sorted by assumption
+C. A[lo, i) <= A[i, hi) by LI line 26
+D. A[lo, i) <= A[i] by math on C
+E. A[lo, i') is sorted by math on A, D
+
+    assume: A[lo, i) <= A[i, hi)
+    to show: A[lo, i') <= A[i', hi)
+A. i' = i + 1 by line 23
+B. A[lo, i) <= A[i, hi)
+C. A[min_idx] <= A[i, hi)
+D. A[i] <= A[i, hi) swapped
+E. A[i] <= A[i + 1, hi) 
+F. A[lo, i) <= A[i]
+G. A[lo, i') <= A[i', hi)
+*/
+
+int main() 
+{
+    int[] arr = alloc_array(int, 5);
+    arr[0] = 9;
+    arr[1] = 5;
+    arr[2] = 3;
+    arr[3] = 1;
+    arr[4] = 6;
+    
+    sort(arr, 0, 5);
+    
+    assert(is_sorted(arr, 0, 5));
+
+    println("All tests passed");
+    
+    return 0;
+}
