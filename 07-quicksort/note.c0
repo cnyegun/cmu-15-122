@@ -1,17 +1,96 @@
 #use <conio>
 #use "arrayutil.c0"
 
-void quicksort(int[] A, int lo, int hi) 
+int partition(int[] A, int lo, int pi, int hi);
+void sort(int[] A, int lo, int hi);
+void test();
+
+void sort(int[] A, int lo, int hi) 
 //@requires 0 <= lo && lo <= hi && hi <= \length(A);
-//@ensures is_sorted(A, 0, n);
+//@ensures is_sorted(A, lo, hi);
 {
     if (hi - lo <= 1) return;
 
+    // pick the pivot 
+    int pi_idx = lo + (hi - lo) / 2;
+
+    int mid = partition(A, lo, pi_idx, hi);
+    // after this, A[mid] >= A[lo, mid)
+    //             A[mid] <= A[mid + 1, hi)
+    sort(A, lo, mid);
+    sort(A, mid + 1, hi);
+
+    return;
 }
 
 int partition(int[] A, int lo, int pi, int hi) 
-//@requires 0 <= lo && lo <= pi;
-//@requires pi < hi && hi <= \length(A);
-//@ensures lo <= \result && \result < hi;
-//@ensures ge_seg(A[\result], A, \result);
-//@ensures le_seg(A[\result], A, \result);
+//@requires 0 <= lo && lo <= pi && pi < hi && hi <= \length(A);
+//@ensures 0 <= \result && \result < hi;
+//@ensures ge_seg(A[\result], A, lo, \result);
+//@ensures le_seg(A[\result], A, \result, hi);
+{
+    int pivot = A[pi];
+    swap(A, lo, pi);
+
+    int left = lo + 1;
+    int right = hi;
+
+    while(left < right) 
+    //@loop_invariant lo + 1 <= left && left <= right && right <= hi;
+    //@loop_invariant ge_seg(pivot, A, lo + 1, left);
+    //@loop_invariant le_seg(pivot, A, right, hi);
+    //@loop_invariant A[lo] == pivot;
+    {
+        if (A[left] <= pivot) left++;
+        else {
+            //@assert A[left] > pivot; 
+            swap(A, left, right - 1);
+            right--;
+        }
+    }
+    
+    //@assert left == right;
+    swap(A, lo, left - 1);
+
+    return left - 1; //return the index of the pivot's value
+}
+
+
+void test() {
+    // Test 1: Already sorted
+    int[] arr1 = alloc_array(int, 5);
+    arr1[0] = 1; arr1[1] = 2; arr1[2] = 3; arr1[3] = 4; arr1[4] = 5;
+    sort(arr1, 0, 5);
+    assert(is_sorted(arr1, 0, 5));
+
+    // Test 2: Reverse sorted
+    int[] arr2 = alloc_array(int, 5);
+    arr2[0] = 5; arr2[1] = 4; arr2[2] = 3; arr2[3] = 2; arr2[4] = 1;
+    sort(arr2, 0, 5);
+    assert(is_sorted(arr2, 0, 5));
+
+    // Test 3: All elements equal
+    int[] arr3 = alloc_array(int, 4);
+    arr3[0] = 7; arr3[1] = 7; arr3[2] = 7; arr3[3] = 7;
+    sort(arr3, 0, 4);
+    assert(is_sorted(arr3, 0, 4));
+
+    // Test 4: Random order with duplicates
+    int[] arr4 = alloc_array(int, 6);
+    arr4[0] = 3; arr4[1] = 1; arr4[2] = 4; arr4[3] = 3; arr4[4] = 2; arr4[5] = 1;
+    sort(arr4, 0, 6);
+    assert(is_sorted(arr4, 0, 6));
+
+    // Test 5: Single element
+    int[] arr5 = alloc_array(int, 1);
+    arr5[0] = 42;
+    sort(arr5, 0, 1);
+    assert(is_sorted(arr5, 0, 1));
+
+    // Test 6: Empty array
+    int[] arr6 = alloc_array(int, 0);
+    sort(arr6, 0, 0);
+    assert(is_sorted(arr6, 0, 0));
+
+    println("All tests passed!");
+}
