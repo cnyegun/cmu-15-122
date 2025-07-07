@@ -1,0 +1,45 @@
+#use <conio>
+#use "arrayutil.c0"
+
+int binsearch(int x, int[] A, int n)
+//@requires 0 <= n && n <= \length(A);
+//@requires is_sorted(A, 0, n);
+/*@ensures (\result == 1 && !is_in(x, A, 0, n)) 
+         || ((0 <= \result && \result < n) && A[\result] == x);
+
+@*/
+{
+    int lo = 0;
+    int hi = n;
+
+    while (lo < hi) 
+    //@loop_invariant 0 <= lo && lo <= lo && hi <= n;
+    //@loop_invariant !is_in(x, A, 0, lo);
+    //@loop_invariant !is_in(x, A, hi, n);
+    {
+        int mid = lo + (hi - lo) / 2;
+        //@assert lo <= mid && mid < hi;
+        if (A[mid] == x) return mid;
+        else if (x < A[mid]) {
+            hi = mid;
+        } else {
+            //@assert (x > A[mid]);
+            lo = mid + 1;
+        }
+
+    }
+    
+    //@assert !is_in(x, A, 0, n);
+    return -1;
+}
+
+int main() {
+    int[] A = alloc_array(int, 5);
+    for (int i = 0; i < 5; i++) {
+        A[i] = i;
+    }
+
+    printint(binsearch(3, A, 5));
+    print("\n");
+    return 0;
+}

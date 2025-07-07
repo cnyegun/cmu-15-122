@@ -1,0 +1,62 @@
+// binary search is a searching algorithm looking for an element in a sorted collection
+#use <conio>
+#use "arrayutil.c0"
+
+/*
+INPUT: an array and its length, a number x
+            |
+            v
+GOAL: search for x
+*/
+
+int binsearch(int x, int[] A, int n)
+//@requires 0 <= n && n <= \length(A);
+//@requires is_sorted(A, 0, n);
+/*@ensures (\result == 1 && !is_in(x, A, 0, n)) 
+         || ((0 <= \result && \result < n) && A[\result] == x);
+
+@*/
+{
+    int lo = 0;
+    int hi = n;
+
+    while (lo < hi) 
+    //@loop_invariant 0 <= lo && lo <= lo && hi <= n;
+    //@loop_invariant (lo == 0 || A[lo - 1] < x);
+    //@loop_invariant (hi == n || A[hi] > x);
+    {
+        int mid = lo + (hi - lo) / 2;
+        //@assert lo <= mid && mid < hi;
+        if (A[mid] == x) return mid;
+        else if (x < A[mid]) {
+            hi = mid;
+        } else {
+            //@assert (x > A[mid]);
+            lo = mid + 1;
+        }
+
+    }
+    
+    //@assert !is_in(x, A, 0, n);
+    return -1;
+}
+
+/* PROOF 
+Init: lo = hi and hi = n so the first l_i holds true also 
+        the disjunct lo == 0 and hi == n make it true
+
+Preservation:
+    assume the loop invariant are satisfied as we enter the loop 
+*/
+
+int main() {
+    int[] A = alloc_array(int, 5);
+    for (int i = 0; i < 5; i++) {
+        A[i] = i;
+    }
+
+    printint(binsearch(3, A, 5));
+    print("\n");
+    return 0;
+}
+

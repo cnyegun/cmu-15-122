@@ -1,0 +1,61 @@
+/*
+Exercise 3. 
+  Binary search as presented here may not find the leftmost occurrence
+of x in the array in case the occurrences are not unique. Given an example demon-
+strating this.
+  Now change the binary search function and its loop invariants so that it will
+always find the leftmost occurrence of x in the given array (if it is actually in the
+array, −1 as before if it is not).
+  Prove the loop invariants and the post-conditions for this new version, and
+verify termination.
+*/
+#use <conio>
+#use "arrayutil.c0"
+
+int binsearch(int target, int[] A, int n) 
+//@requires 0 <= n && n <= \length(A);
+//@requires is_sorted(A, 0, n);
+/*@ensures (\result == -1 && !is_in(target, A, 0, n)) 
+        || ((0 <= \result && \result < n) && (A[\result] == target));
+@*/ 
+{
+    int lo = 0;
+    int hi = n;
+    int res = -1;
+
+    while (lo < hi)
+    //@loop_invariant 0 <= lo && lo <= hi && hi <= n;
+    //@loop_invariant gt_seg(target, A, 0, lo);
+    //@loop_invariant le_seg(target, A, hi, n);
+    {
+        int mid = lo + (hi - lo) / 2;
+        //@assert 0 <= mid && mid < n;
+
+        print("hi = "); printint(hi); print("\n");
+        assert(le_seg(target, A, hi, n));
+
+
+        if (target == A[mid]) {
+            res = mid;
+            hi = mid;
+        }
+        else if (target > A[mid]) lo = mid + 1;
+        else hi = mid;
+    }
+
+    return res;
+}
+
+
+int test() {
+    int[] A = alloc_array(int, 6);
+    A[0] = 1;
+    A[1] = 2;
+    A[2] = 2;
+    A[3] = 2;
+    A[4] = 2;
+    A[5] = 2;
+
+
+    return binsearch(2, A, 6);
+}
