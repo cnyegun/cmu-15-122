@@ -1,0 +1,17 @@
+#use <conio>
+#use "arrayutil.c0"
+
+void quicksort(int[] A, int lo, int hi) 
+//@requires 0 <= lo && lo <= hi && hi <= \length(A);
+//@ensures is_sorted(A, 0, n);
+{
+    if (hi - lo <= 1) return;
+
+}
+
+int partition(int[] A, int lo, int pi, int hi) 
+//@requires 0 <= lo && lo <= pi;
+//@requires pi < hi && hi <= \length(A);
+//@ensures lo <= \result && \result < hi;
+//@ensures ge_seg(A[\result], A, \result);
+//@ensures le_seg(A[\result], A, \result);

@@ -1,0 +1,56 @@
+/*
+ * Divide and conquer sort
+ *
+ * 15-122 Principles of Imperative Computation: Mergesort
+ */
+
+
+void merge(int[] A, int lo, int mid, int hi)
+//@requires 0 <= lo && lo <= mid && mid <= hi && hi <= \length(A);
+//@requires is_sorted(A, lo, mid) && is_sorted(A, mid, hi);
+//@ensures is_sorted(A, lo, hi);
+{
+  int[] B = alloc_array(int, hi-lo);
+  int i = lo;
+  int j = mid;
+  int k = 0;
+
+  while (i < mid && j < hi)
+  //@loop_invariant lo <= i && i <= mid;
+  //@loop_invariant mid <= j && j <= hi;
+  //@loop_invariant k == (i - lo) + (j - mid);
+  {
+    if (A[i] <= A[j]) {
+      B[k] = A[i];
+      i++;
+    } else { //@assert A[i] > A[j];
+      B[k] = A[j];
+      j++;
+    }
+    k++;
+  }
+
+  //@assert i == mid || j == hi;
+  // Exercise: write the omitted invariants for these loops
+  while (i < mid) { B[k] = A[i]; i++; k++; }
+  while (j < hi)  { B[k] = A[j]; j++; k++; }
+
+  // Copy sorted array back into A
+  for (k = 0; k < hi-lo; k++)
+    A[lo+k] = B[k];
+}
+
+
+// mergesort
+void sort(int[] A, int lo, int hi)
+//@requires 0 <= lo && lo <= hi && hi <= \length(A);
+//@ensures is_sorted(A, lo, hi);
+{
+  if (hi - lo <= 1)            //@assert is_sorted(A, lo, hi);
+    return;
+
+  int mid = lo + (hi - lo)/2;  //@assert lo < mid && mid < hi;
+  sort(A, lo, mid);            //@assert is_sorted(A, lo, mid);
+  sort(A, mid, hi);            //@assert is_sorted(A, mid, hi);
+  merge(A, lo, mid, hi);       //@assert is_sorted(A, lo, hi);
+}
