@@ -122,6 +122,32 @@ void print_seg(int[]A, int lo, int hi)
   printf("]");
 }
 
+int[] seg_copy(int[] A, int lo, int hi)
+//@requires 0 <= lo && lo <= hi && hi <= \length(A);
+{
+  int size = hi - lo;
+  int[] B = alloc_array(int, size);
+  
+  for (int i = 0; i < size; i++) 
+  {
+    B[i] = A[lo + i];
+  }
+
+  return B;
+}
+
+bool array_equal(int[] A, int[] B, int lo, int hi)
+//@requires 0 <= lo && lo <= hi;
+//@requires hi <= \length(A) && hi <= \length(B);  
+{
+  for (int i = lo; i < hi; i++)
+  {
+    if (A[i] != B[i]) return false;
+  }
+
+  return true;
+}
+
 /************************** END IMPLEMENTATION **************************/
 /************************************************************************/
 
@@ -179,5 +205,14 @@ bool le_segs(int[] A, int lo1, int hi1, int[] B, int lo2, int hi2)
 /*@requires 0 <= lo2 && lo2 <= hi2 && hi2 <= \length(B); @*/ ;
 
 /* print_seg: prints A[lo, hi) */
-void print_seg(int[]A, int lo, int hi)
+void print_seg(int[] A, int lo, int hi)
 /*@requires 0 <= lo && lo <= hi && hi <= \length(A); @*/ ;
+
+/* seg_copy: returns a pointer to the new seg */
+int[] seg_copy(int[] A, int lo, int hi)
+/*@requires 0 <= lo && lo <= hi && hi <= \length(A); @*/ ;
+
+bool array_equal(int[] A, int[] B, int lo, int hi)
+//@requires 0 <= lo && lo <= hi;
+//@requires hi <= \length(A) && hi <= \length(B);  
+;

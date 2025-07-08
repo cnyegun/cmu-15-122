@@ -1,5 +1,6 @@
 #use <conio>
 #use "arrayutil.c0"
+#use "selsort.c0"
 
 void merge(int[] A, int lo, int mid, int hi)
 //@requires 0 <= lo && lo <= mid && mid <= hi && hi <= \length(A);
@@ -96,8 +97,27 @@ void test() {
         xs[i] = 50 - i; // just some descending data
     }
 
-    sort(xs, 0, 50);
+    selsort(xs, 0, 50);
 
+    print_seg(xs, 0, 50);
     assert(is_sorted(xs, 0, 50));
     println("All tests passed!");
+}
+
+
+bool is_permutation(int[] A, int[] B, int lo, int hi)
+//@requires 0 <= lo && lo <= hi;
+//@requires hi <= \length(A) && hi <= \length(B);
+{
+    if (n_a != n_b) return false;
+    //@assert n_a == n_b;
+
+    int[] tmp_a = seg_copy(A, 0, n_a);
+    int[] tmp_b = seg_copy(B, 0, n_b);
+
+    selsort(tmp_a, lo, hi);
+    selsort(tmp_b, lo, hi);
+
+    return array_equal(tmp_a, tmp_b, lo, hi);
+    // forall k from lo to hi; tmp_a[k] == tmp_b[k] --> true
 }

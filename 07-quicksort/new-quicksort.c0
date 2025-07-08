@@ -28,6 +28,7 @@ int partition(int[] A, int lo, int pi, int hi)
 //@ensures 0 <= \result && \result < hi;
 //@ensures ge_seg(A[\result], A, lo, \result);
 //@ensures le_seg(A[\result], A, \result, hi);
+//@ensures 
 {
     int pivot = A[pi];
     swap(A, lo, pi);
