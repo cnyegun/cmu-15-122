@@ -1,0 +1,118 @@
+#use "arrayutil.c0"
+
+void merge(int[] A, int lo, int mid, int hi)
+//@requires 0 <= lo && lo <= mid && mid <= hi && hi <= \length(A);
+//@requires is_sorted(A, lo, mid) && is_sorted(A, mid, hi);
+//@ensures is_sorted(A, lo, hi);
+{
+    int[] rsf = alloc_array(int, hi - lo);
+    int left = lo;
+    int right = mid;
+    int k = 0;
+
+    while (left < mid && right < hi)
+    //@loop_invariant lo <= left && left <= mid;
+    //@loop_invariant mid <= right && right <= hi;
+    //@loop_invariant k == (left - lo) + (right - mid);
+
+    {
+        if (A[left] < A[right]) {
+            rsf[k] = A[left];
+            left++;
+        } else {
+            rsf[k] = A[right];
+            right++;
+        }
+        k++;
+    }
+
+    while (left < mid) { rsf[k] = A[left]; left++; k++; }
+    while (right < hi) { rsf[k] = A[right]; right++; k++; }
+
+    for (k = 0; k < hi - lo; k++)
+    {
+        A[lo + k] = rsf[k];
+    }
+}
+
+void msort(int[] A, int lo, int hi)
+//@requires 0 <= lo && lo <= hi && hi <= \length(A);
+//@ensures is_sorted(A, lo, hi);
+{
+    if (hi - lo <= 1) return;
+
+    int mid = lo + (hi - lo) / 2;
+
+    msort(A, lo, mid);
+    msort(A, mid, hi);
+
+    merge(A, lo, mid, hi);
+
+    return;
+}
+
+void test()
+{
+    // Test 1: already sorted
+    int[] xs1 = alloc_array(int, 5);
+    xs1[0] = 1; xs1[1] = 2; xs1[2] = 3; xs1[3] = 4; xs1[4] = 5;
+    msort(xs1, 0, 5);
+    assert(is_sorted(xs1, 0, 5));
+
+    // Test 2: reversed order
+    int[] xs2 = alloc_array(int, 5);
+    xs2[0] = 5; xs2[1] = 4; xs2[2] = 3; xs2[3] = 2; xs2[4] = 1;
+    msort(xs2, 0, 5);
+    assert(is_sorted(xs2, 0, 5));
+
+    // Test 3: all elements are equal
+    int[] xs3 = alloc_array(int, 4);
+    xs3[0] = 7; xs3[1] = 7; xs3[2] = 7; xs3[3] = 7;
+    msort(xs3, 0, 4);
+    assert(is_sorted(xs3, 0, 4));
+
+    // Test 4: contains duplicates
+    int[] xs4 = alloc_array(int, 6);
+    xs4[0] = 3; xs4[1] = 1; xs4[2] = 2; xs4[3] = 3; xs4[4] = 1; xs4[5] = 2;
+    msort(xs4, 0, 6);
+    assert(is_sorted(xs4, 0, 6));
+
+    // Test 5: contains negative numbers
+    int[] xs5 = alloc_array(int, 5);
+    xs5[0] = -3; xs5[1] = 0; xs5[2] = 2; xs5[3] = -1; xs5[4] = 4;
+    msort(xs5, 0, 5);
+    assert(is_sorted(xs5, 0, 5));
+
+    // Test 6: single element
+    int[] xs6 = alloc_array(int, 1);
+    xs6[0] = 42;
+    msort(xs6, 0, 1);
+    assert(is_sorted(xs6, 0, 1));
+
+    // Test 7: empty range
+    int[] xs7 = alloc_array(int, 0); // or any array, but range is empty
+    msort(xs7, 0, 0);
+    assert(is_sorted(xs7, 0, 0));
+
+    // Test 8: two elements, already sorted
+    int[] xs8 = alloc_array(int, 2);
+    xs8[0] = 1; xs8[1] = 2;
+    msort(xs8, 0, 2);
+    assert(is_sorted(xs8, 0, 2));
+
+    // Test 9: two elements, unsorted
+    int[] xs9 = alloc_array(int, 2);
+    xs9[0] = 2; xs9[1] = 1;
+    msort(xs9, 0, 2);
+    assert(is_sorted(xs9, 0, 2));
+
+    // Test 10: large range with random order
+    int[] xs10 = alloc_array(int, 10);
+    xs10[0] = 4; xs10[1] = -5; xs10[2] = 9; xs10[3] = 0; xs10[4] = -1;
+    xs10[5] = 3; xs10[6] = 7; xs10[7] = 2; xs10[8] = -8; xs10[9] = 6;
+    msort(xs10, 0, 10);
+    assert(is_sorted(xs10, 0, 10));
+
+
+    println("All tests passed!");
+}
