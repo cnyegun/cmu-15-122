@@ -1,0 +1,103 @@
+#use <conio>
+#use "arrayutil.c0"
+
+void merge(int[] A, int lo, int mid, int hi)
+//@requires 0 <= lo && lo <= mid && mid <= hi && hi <= \length(A);
+//@requires is_sorted(A, lo, mid) && is_sorted(A, mid, hi);
+//@ensures is_sorted(A, lo, hi);
+{
+    // left subarray: A[lo, mid);
+    // right subarray: A[mid, hi);
+    int[] temp = alloc_array(int, hi - lo);
+    int k = 0;
+    int i = lo;
+    int j = mid;
+
+    while (i < mid && j < hi)
+    //@loop_invariant lo <= i && i <= mid;
+    //@loop_invariant mid <= j && j <= hi;
+    //@loop_invariant k == (i - lo) + (j - mid);
+    {
+        if (A[i] <= A[j]) {
+            temp[k] = A[i];
+            i++;
+        } else {
+            //@assert A[i] > A[j];
+            temp[k] = A[j];
+            j++;
+        }
+        k++;
+    }
+
+    //@assert i == mid || j == hi;
+    while (i < mid) 
+    //@loop_invariant 0 <= k && k <= hi - lo;
+    //@loop_invariant lo <= i && i <= mid;
+    //@loop_invariant is_sorted(temp, 0, k);
+    {
+        temp[k] = A[i];
+        i++; k++;
+    }
+
+    while (j < hi) 
+    //@loop_invariant 0 <= k && k <= hi - lo;
+    //@loop_invariant lo <= j && j <= hi;
+    //@loop_invariant is_sorted(temp, 0, k);
+    {
+        temp[k] = A[j];
+        j++; k++;
+    }
+
+    for (k = 0; k < hi - lo; k++) 
+    //@loop_invariant 0 <= k && k <= hi - lo;
+    //@loop_invariant lo <= lo + k && lo + k <= hi;
+    //@loop_invariant is_sorted(A, lo, lo + k);
+    {
+        A[lo + k] = temp[k];
+    }
+}
+
+void sort(int[] A, int lo, int hi)
+//@requires 0 <= lo && lo <= hi && hi <= \length(A);
+//@ensures is_sorted(A, lo, hi);
+{
+    if (hi - lo <= 1) return;
+    int mid = lo + (hi - lo) / 2;
+
+    // sort left seg [lo, mid)
+    sort(A, lo, mid);
+    // sort right seg [mid, hi)
+    sort(A, mid, hi);
+
+    // then merge two sorted segments
+    merge(A, lo, mid, hi);
+
+    return;
+}
+
+
+void test() {
+    int[] xs = alloc_array(int, 50);
+    //@assert \length(xs) == 50;
+
+    // Fill array manually
+    xs[0] = 5;
+    xs[1] = -3;
+    xs[2] = 9;
+    xs[3] = 4;
+    xs[4] = 1;
+    xs[5] = -7;
+    xs[6] = 3;
+    xs[7] = 4;
+    xs[8] = 0;
+    xs[9] = -1;
+    // You can keep filling up to 49 elements, or just test the first 10
+    for (int i = 10; i < 50; i++) {
+        xs[i] = 50 - i; // just some descending data
+    }
+
+    sort(xs, 0, 50);
+
+    assert(is_sorted(xs, 0, 50));
+    println("All tests passed!");
+}
