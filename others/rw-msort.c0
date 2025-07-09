@@ -10,7 +10,7 @@ void merge(int[] A, int lo, int mid, int hi)
     int right = mid;
     int k = 0;
 
-    while (left < mid && right < hi)
+    while (left < mid && mid < right)
     //@loop_invariant lo <= left && left <= mid;
     //@loop_invariant mid <= right && right <= hi;
     //@loop_invariant k == (left - lo) + (right - mid);

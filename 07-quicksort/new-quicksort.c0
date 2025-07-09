@@ -28,7 +28,6 @@ int partition(int[] A, int lo, int pi, int hi)
 //@ensures 0 <= \result && \result < hi;
 //@ensures ge_seg(A[\result], A, lo, \result);
 //@ensures le_seg(A[\result], A, \result, hi);
-//@ensures 
 {
     int pivot = A[pi];
     swap(A, lo, pi);
@@ -36,7 +35,7 @@ int partition(int[] A, int lo, int pi, int hi)
     int left = lo + 1;
     int right = hi;
 
-    while(left < right) 
+    while (left < right) 
     //@loop_invariant lo + 1 <= left && left <= right && right <= hi;
     //@loop_invariant ge_seg(pivot, A, lo + 1, left);
     //@loop_invariant le_seg(pivot, A, right, hi);
