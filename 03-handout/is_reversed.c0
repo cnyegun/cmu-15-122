@@ -1,0 +1,26 @@
+bool is_reversed(int[] first, int[] last, int i, int n)
+//@requires 0 <= n && n == \length(first) && n == \length(last);
+//@requires 0 <= i && i <= n;
+{
+    for (int j = 0; j < i; j++)
+    {
+        if (first[j] != last[n - 1 - j]) return false;
+    }
+    return true;
+}
+
+int[] reverse(int[] A, int n)
+//@requires n == \length(A);
+//@ensures is_reversed(A, \result, n, n);
+{
+    int[] B = alloc_array(int, n);
+    
+    for (int i = 0; i < n; i++)
+    //@loop_invariant 0 <= i && i <= n;
+    //@loop_invariant is_reversed(A, B, i, n);
+    {
+        B[n - i - 1] = A[i];
+    }
+
+    return B;
+}
