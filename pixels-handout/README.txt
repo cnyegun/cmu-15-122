@@ -47,3 +47,12 @@ Compiling multireturn.c0:
 
 Creating a tarball to submit with autolab.andrew.cmu.edu web interface:
    % tar -czvf handin.tgz quantize.c0 multireturn.c0 pixel-int.c0 respect.c0 pixel-bad.c0 pixel-test.c0
+
+
+
+
+1. A Pixel Library
+
+- Need to know about a pixel:
+   1. How transparent it is (alpha value) [0, 255]
+   2. What color it is

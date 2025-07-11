@@ -22,9 +22,14 @@
 pixel_t quantize(pixel_t p, int q)
 //@requires 0 <= q && q <= 8;
 {
-  // Implement me!
-}
+   int mask = 0xffffffff << q;
+   int alpha = get_alpha(p);
+   int red = get_red(p) & mask;
+   int green = get_green(p) & mask;
+   int blue = get_blue(p) & mask;
 
+   return make_pixel(alpha, red, green, blue);
+}
 /* Task 2 - Testing quantize()
 
    Write some more tests for quantize. Remember to respect the pixels
