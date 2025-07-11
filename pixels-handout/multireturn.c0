@@ -30,15 +30,19 @@ void count_zeroes(pixel_t[] A, int length, int[] results)
 //@requires \length(A) == length;
 //@requires \length(results) == 3;
 {
-  results = alloc_array(int, 3);
+  results[0] = 0;
+  results[1] = 0;
+  results[2] = 0;
 
   for (int i = 0; i < length; i++)
   //@loop_invariant 0 <= i;
   {
     if (get_red(A[i]) == 0)
       results[0] = results[0] + 1;
+
     if (get_green(A[i]) == 0)
       results[1] = results[1] + 1;
+
     if (get_blue(A[i]) == 0)
       results[2] = results[2] + 1;
   }

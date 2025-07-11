@@ -11,5 +11,10 @@
  */
 
 pixel_t remove_red(pixel_t p) {
-  return 0xFF00FFFF & p;
+  int alpha = get_alpha(p);
+  int green = get_green(p);
+  int blue  = get_blue(p);
+
+  return make_pixel(alpha, 0, green, blue);
+
 }
