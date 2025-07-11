@@ -75,21 +75,35 @@ bool is_palindrome_old(int[] A, int i, int j)
   return true;
 }
 
+// bool is_palindrome(int[] A, int n)
+// //@requires 0 <= n && n <= \length(A);
+// //@ensures \result == is_palindrome_old(A, 0, n);
+// {
+//   int is_odd = n % 2 == 0 ? 0 : 1;
+//   for (int i = 0; i < n/2; i++)
+//   //@loop_invariant 0 <= i && i <= n/2;
+//   //@loop_invariant is_palindrome_old(A, n/2 - i, n/2 + i + is_odd);
+//   {
+//     if (n % 2 != 0) {
+//       if (A[n/2 - i - 1] != A[n/2 + i + 1]) return false;
+//     } else {
+//       //@assert n % 2 == 0;
+//       if (A[n/2 + i] != A[n/2 - i - 1]) return false;
+//     }
+//   }
+// 	return true;
+// }
+
+
 bool is_palindrome(int[] A, int n)
 //@requires 0 <= n && n <= \length(A);
 //@ensures \result == is_palindrome_old(A, 0, n);
 {
-  int is_odd = n % 2 == 0 ? 0 : 1;
   for (int i = 0; i < n/2; i++)
   //@loop_invariant 0 <= i && i <= n/2;
-  //@loop_invariant is_palindrome_old(A, n/2 - i, n/2 + i + is_odd);
+  //@loop_invariant is_reversed(A, A, i, n);
   {
-    if (n % 2 != 0) {
-      if (A[n/2 - i - 1] != A[n/2 + i + 1]) return false;
-    } else {
-      //@assert n % 2 == 0;
-      if (A[n/2 + i] != A[n/2 - i - 1]) return false;
-    }
+    if (A[i] != A[n - 1 - i]) return false;
   }
 	return true;
 }

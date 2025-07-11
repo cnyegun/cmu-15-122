@@ -1,0 +1,58 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+#use <util>
+#use <conio>
+
+/* The pixel type and an interface to pixels */
+
+typedef int pixel;       // Library (concrete) view of a pixel
+
+
+// Returns an int representing an ARGB pixel consisting of the given
+// alpha, red, green and blue intensity values.
+// PRECONDITION: all intensity values must be between 0 and 255,
+// inclusive.
+pixel make_pixel(int alpha, int red, int green, int blue)
+{
+
+}
+
+// Returns the alpha component of the given pixel p.
+// POSTCONDITION: returned value is between 0 and 255, inclusive.
+int get_alpha(pixel p)
+{
+
+}
+
+// Returns the red component of the given pixel p.
+// POSTCONDITION: returned value is between 0 and 255, inclusive.
+int get_red(pixel p)
+{
+
+}
+
+// Returns the green component of the given pixel p.
+// POSTCONDITION: returned value is between 0 and 255, inclusive.
+int get_green(pixel p)
+{
+
+}
+
+// Returns the blue component of the given pixel p.
+// POSTCONDITION: returned value is between 0 and 255, inclusive.
+int get_blue(pixel p)
+{
+
+}
+
+
+// Do not write code below this line
+
+// Prints a pixel to terminal
+void pixel_print(pixel p) {
+  printf("%s", int2hex(p)); flush();
+}
+
+typedef pixel pixel_t;   // Client (abstract) view of a pixel

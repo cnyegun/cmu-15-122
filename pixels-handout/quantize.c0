@@ -1,0 +1,44 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+/* The pixel interface describes the pixel type. It also defines
+   five functions: get_red(p), get_green(p), get_blue(p),
+   get_alpha(p), and make_pixel(a,r,g,b).  If you're *given* a
+   working pixel library, you can use the pixel interface
+   without knowing how pixels are represented.
+
+   When writing this file, only use the pixel interface.  We'll
+   check your code by compiling and running it against different
+   implementations of the pixel interface.
+
+   There are  tasks in this file:
+    - Task 1 - Implement quantize() as described in the writeup
+    - Task 2 - Testing quantize()
+*/
+
+/* Task 1 - Implement quantize() as described in the writeup */
+
+pixel_t quantize(pixel_t p, int q)
+//@requires 0 <= q && q <= 8;
+{
+  // Implement me!
+}
+
+/* Task 2 - Testing quantize()
+
+   Write some more tests for quantize. Remember to respect the pixels
+   interface! We *will* run these tests, and will grade them based on
+   their ability to catch buggy implementations of quantize.
+*/
+
+void test_quantize() {
+  pixel_t p = quantize(make_pixel(0xFF, 0xFF, 0xFF, 0xFF), 4);
+  assert(get_alpha(p) == 0xFF);
+  assert(get_red(p)   == 0xF0);
+  assert(get_green(p) == 0xF0);
+  assert(get_blue(p)  == 0xF0);
+
+  // More tests ...
+
+}

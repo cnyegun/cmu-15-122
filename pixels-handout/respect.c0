@@ -1,0 +1,15 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+/* Respecting interfaces
+
+   This implementation of the remove_red() function takes a pixel and
+   return a pixel with red intensity 0 and with other intensities
+   unchanged. It does not currently respect the pixel interface:
+   change it so that it does.
+ */
+
+pixel_t remove_red(pixel_t p) {
+  return 0xFF00FFFF & p;
+}

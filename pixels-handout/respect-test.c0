@@ -1,0 +1,29 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+/* This is some code for testing the remove_red() function.  It *does*
+   respect the pixel interface.  You can use it to test your
+   implementation and, if you want, extend it with your own tests, but
+   we won't run this test code in the autograder.
+*/
+
+bool remove_red_works(pixel_t p1) {
+  pixel_t p2 = remove_red(p1);
+  if (get_alpha(p2) != get_alpha(p1)) return false;
+  if (get_red(p2)   != 0)             return false;
+  if (get_green(p2) != get_green(p1)) return false;
+  if (get_blue(p2)  != get_blue(p1))  return false;
+  return true;
+}
+
+int main() {
+  assert(remove_red_works(make_pixel(0xFF, 0x01, 0x03, 0x04)));
+  assert(remove_red_works(make_pixel(0x02, 0x00, 0xFF, 0xEE)));
+  assert(remove_red_works(make_pixel(0xFF, 0xFF, 0xFF, 0xFF)));
+  assert(remove_red_works(make_pixel(0x00, 0x00, 0x00, 0x00)));
+  assert(remove_red_works(make_pixel(0x00, 0xAA, 0xBB, 0xCC)));
+
+  printf("All tests passed!\n");
+  return 0;
+}

@@ -1,0 +1,118 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+/* In C and C0, it's a bit difficult to return more than one value
+   from a function. For instance, say we needed to know, given an
+   array of pixels, how many pixels had red intensity 0, how many
+   pixels had blue intensity 0, and how many pixels had green
+   intensity 0.
+
+   We could write three different functions to return these three
+   values, but what we'd like to do instead is write one loop that
+   calculates all three values. Then, those three values are returned
+   to the user by modifying the contents of an array that was passed
+   to the function.
+
+   The function count_zeroes is supposed to count the number of
+   0-intensity red, green, and blue pixels and store the results in
+   results[0], results[1], and results[2], respectively. In other
+   words, the pixel array A[] is an input and should not change, but
+   the integer array results[] is an output, and we have to change
+   it.
+
+   The count_zeroes function has a couple of bugs and therefore fails
+   the test cases below. Fix it, but do not change the interface. (You
+   shouldn't need to change the test cases, either.)
+ */
+
+void count_zeroes(pixel_t[] A, int length, int[] results)
+//@requires \length(A) == length;
+//@requires \length(results) == 3;
+{
+  results = alloc_array(int, 3);
+
+  for (int i = 0; i < length; i++)
+  //@loop_invariant 0 <= i;
+  {
+    if (get_red(A[i]) == 0)
+      results[0] = results[0] + 1;
+    if (get_green(A[i]) == 0)
+      results[1] = results[1] + 1;
+    if (get_blue(A[i]) == 0)
+      results[2] = results[2] + 1;
+  }
+}
+
+/* What follows is some code for testing the function count_zeros().
+   You can use it to help you understand what count_zeros is supposed
+   to do, and you can use it to test your implementation. If you
+   want, you can extend it with your own tests, but we won't run
+   this test code in the autograder.
+*/
+
+pixel_t[] copy_pixels(pixel_t[] A, int length)
+//@requires length == \length(A);
+//@ensures length == \length(\result);
+//@ensures \result != A;
+{
+  pixel_t[] B = alloc_array(pixel_t, length);
+  for (int i = 0; i < length; i++)
+    //@loop_invariant 0 <= i;
+    {
+      B[i] = A[i];
+    }
+  return B;
+}
+
+bool pixels_equal(pixel_t[] A, pixel_t[] B, int length)
+//@requires length == \length(A);
+//@requires length == \length(B);
+{
+  for (int i = 0; i < length; i++)
+    //@loop_invariant 0 <= i;
+    {
+      if (get_alpha(A[i]) != get_alpha(B[i])) return false;
+      if (get_red(A[i])   != get_red(B[i]))   return false;
+      if (get_green(A[i]) != get_green(B[i])) return false;
+      if (get_blue(A[i])  != get_blue(B[i]))  return false;
+    }
+  return true;
+}
+
+void test_count_zeroes() {
+  pixel_t[] A;
+  pixel_t[] C;
+  int[] results = alloc_array(int, 3);
+
+  // Initialize the array of pixels, make a copy.
+  A = alloc_array(pixel_t, 9);
+  A[0] = make_pixel(0xFF, 0x01, 0x03, 0x04);
+  A[1] = make_pixel(0x02, 0x00, 0xFF, 0xEE);
+  A[2] = make_pixel(0xFF, 0xFF, 0xFF, 0xFF);
+  A[3] = make_pixel(0xEE, 0xFF, 0xDD, 0x00);
+  A[4] = make_pixel(0xDD, 0xCC, 0x00, 0xFF);
+  A[5] = make_pixel(0xCC, 0x00, 0xDD, 0xEE);
+  A[6] = make_pixel(0x00, 0xEE, 0xFF, 0xDD);
+  A[7] = make_pixel(0x00, 0x00, 0x00, 0x00);
+  A[8] = make_pixel(0x00, 0xAA, 0xBB, 0xCC);
+  C = copy_pixels(A, 9);
+
+  // Count the zero-values and check the results
+  count_zeroes(A, 9, results);
+  assert(pixels_equal(A, C, 9));
+  assert(results[0] == 3);
+  assert(results[1] == 2);
+  assert(results[2] == 2);
+
+  // Modify both arrays of pixels
+  A[2] = make_pixel(0x00, 0x00, 0x00, 0xFF);
+  C[2] = make_pixel(0x00, 0x00, 0x00, 0xFF);
+
+  // Count the zero-values and check the results
+  count_zeroes(A, 9, results);
+  assert(pixels_equal(A, C, 9));
+  assert(results[0] == 4);
+  assert(results[1] == 3);
+  assert(results[2] == 2);
+}
