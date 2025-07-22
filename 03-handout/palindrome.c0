@@ -4,6 +4,7 @@ int[] to_arr(int num)
 //@ensures \length(\result) > 0;
 {
   int tmp = num;
+  int tmp = num;
   int n = 0;
   if (tmp == 0) {
     n = 1;
@@ -18,7 +19,7 @@ int[] to_arr(int num)
   }
 
   int[] A = alloc_array(int, n);
-  for(int i=0; i<n; i++)
+  for(int i = 0; i < n; ++i)
   //@loop_invariant i >= 0 && i <= n;
   //@loop_invariant num >= 0;
   {
