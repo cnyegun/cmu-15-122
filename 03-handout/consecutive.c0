@@ -52,7 +52,6 @@ int num_consecutive_trash(int[] A, int n)
 
   // Double counting pairs, so divide answer by 2
   return count / 2;
-  return count / 2;
 }
 
 int num_consecutive_ints(int[] A, int n)
