@@ -70,3 +70,4 @@ int num_consecutive_ints(int[] A, int n)
   }
   return count; // What do we return?
 }
+
