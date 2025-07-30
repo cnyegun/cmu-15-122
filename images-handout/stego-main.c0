@@ -1,0 +1,125 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+#use <conio>
+#use <string>
+#use <args>
+#use <parse>
+#use <img>
+
+void save_to_file(pixel_t[] pixels, int width, int height,
+                  string filename, string comment)
+{
+  /* Create destination image */
+  image_t dest = image_create(width, height);
+  pixel_t[] outpixels = image_data(dest);
+  for (int i = 0; i < width*height; i++)
+  //@loop_invariant 0 <= i && i <= width*height;
+  {
+    outpixels[i] = pixels[i];
+  }
+
+  /* Save result */
+  printf("Saving %s %s ...", comment, filename); flush();
+  image_save(dest, filename);
+  printf("done.\n");
+}
+
+void test_hide(string cover_image, string secret_image, string stego_image,
+               int quality)
+{
+  /* Load cover image */
+  printf("Cover image: %s\n", cover_image);
+  image_t c_img = image_load(cover_image);
+  if (c_img == NULL) error("Could not load cover image");
+  int c_width = image_width(c_img);
+  int c_height = image_height(c_img);
+  pixel_t[] cover = image_data(c_img);
+  printf("\tLoaded cover image.  Dimensions are %d by %d.\n",
+         c_width, c_height);
+
+  /* Load secret image */
+  printf("Secret image: %s\n", secret_image);
+  image_t s_img = image_load(secret_image);
+  if (s_img == NULL) error("Could not load secret image");
+  int s_width = image_width(s_img);
+  int s_height = image_height(s_img);
+  pixel_t[] secret = image_data(s_img);
+  printf("\tLoaded secret image.  Dimensions are %d by %d.\n",
+         s_width, s_height);
+  if (s_width != c_width || s_height != c_height)
+    error("The cover and secret images should have the same width and height");
+
+  /* Embed secret image */
+  printf("Embedding %s into %s ...", secret_image, cover_image); flush();
+  pixel_t[] stego = hide(cover, secret, c_width, c_height, quality);
+  printf("done.\n");
+  /*@assert \length(stego) == c_width*c_height; @*/
+
+  save_to_file(stego, c_width, c_height, stego_image, "stego image");
+}
+
+
+
+void test_unhide(string stego_image, string recovered_image,
+                 int quality)
+{
+  /* Load stego image */
+  printf("Stego image: %s\n", stego_image);
+  image_t o_img = image_load(stego_image);
+  if (o_img == NULL) error("Could not load stego image");
+  int o_width = image_width(o_img);
+  int o_height = image_height(o_img);
+  pixel_t[] stego = image_data(o_img);
+  printf("\tLoaded stego image.  Dimensions are %d by %d.\n",
+         o_width, o_height);
+
+  /* Recover secret image */
+  printf("Recovering secret image from %s ...", stego_image); flush();
+  pixel_t[] recovered = unhide(stego, o_width, o_height, quality);
+  printf("done.\n");
+  /*@assert \length(recovered) == o_width*o_height; @*/
+
+  save_to_file(recovered, o_width, o_height, recovered_image,
+               "recovered image");
+}
+
+
+int main() {
+
+  int* quality      = alloc(int);
+  string* cover     = alloc(string);
+  string* secret    = alloc(string);
+  string* stego     = alloc(string);
+  string* recovered = alloc(string);
+
+  args_int("-q", quality);
+  args_string("-c", cover);
+  args_string("-s", secret);
+  args_string("-o", stego);
+  args_string("-r", recovered);
+  args_parse();
+
+  if (string_equal("", *cover) || string_equal("", *secret))
+    error("\nUsage: stego -c <cover image> -s <secret image> "
+          "[-o <stego image>] [-r <recovered image>] [-q <quality>]");
+
+  if (*quality == 0) {
+    *quality = 4;
+    printf("Using default quality (q = 4)\n");
+  }
+  if (string_equal(*stego, "")) {
+    *stego = "img/stego.png";
+    printf("Using default stego image name (%s)\n", *stego);
+  }
+  if (string_equal(*recovered, "")) {
+    *recovered = "img/recovered.png";
+    printf("Using default recovered image name (%s)\n", *recovered);
+  }
+
+  test_hide(*cover, *secret, *stego, *quality);
+  test_unhide(*stego, *recovered, *quality);
+
+  return 0;
+}

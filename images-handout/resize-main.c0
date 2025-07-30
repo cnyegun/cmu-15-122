@@ -1,0 +1,95 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+#use <conio>
+#use <string>
+#use <args>
+#use <parse>
+#use <img>
+
+void save_to_file(pixel_t[] pixels, int width, int height,
+                  string filename, string comment)
+{
+  /* Create destination image */
+  image_t dest = image_create(width, height);
+  pixel_t[] outpixels = image_data(dest);
+  for (int i = 0; i < width*height; i++)
+  //@loop_invariant 0 <= i && i <= width*height;
+  {
+    outpixels[i] = pixels[i];
+  }
+
+  /* Save result */
+  printf("Saving %s %s ...", comment, filename); flush();
+  image_save(dest, filename);
+  printf("done.\n");
+}
+
+
+void test_resize(string input_image, int k,
+                  string stretched_image, string resized_image)
+{
+  /* Load image */
+  printf("Input image: %s\n", input_image);
+  image_t img = image_load(input_image);
+  if (img == NULL) error("Could not load image");
+  int i_width = image_width(img);
+  int i_height = image_height(img);
+  pixel_t[] input = image_data(img);
+  printf("\tLoaded image.  Dimensions are %d by %d.\n", i_width, i_height);
+
+  /* Stretching image */
+  int r_width = (k+1)*i_width - k;
+  printf("streching image %s by %d from %dx%d to %dx%d ...", input_image,
+         k, i_width, i_height, r_width, i_height);
+  flush();
+  pixel_t[] s_img = stretch_horizontally(input, i_width, i_height, k);
+  printf("done.\n");
+  /*@assert \length(s_img) == r_width*i_height; @*/
+
+  save_to_file(s_img, r_width, i_height, stretched_image, "stretched image");
+
+
+  /* resizing image */
+  int r_height = (k+1)*i_height - k;
+  printf("resizing image %s by %d from %dx%d to %dx%d ...", input_image,
+         k, i_width, i_height, r_width, r_height);
+  flush();
+  pixel_t[] r_img = upsize(input, i_width, i_height, k);
+  printf("done.\n");
+  /*@assert \length(r_img) == r_width*r_height; @*/
+
+  save_to_file(r_img, r_width, r_height, resized_image, "resized image");
+}
+
+
+int main() {
+
+  string* image     = alloc(string);
+  int* k            = alloc(int);
+  string* stretched = alloc(string);
+  string* resized   = alloc(string);
+
+  args_string("-i", image);
+  args_int("-k", k);
+  args_string("-s", stretched);
+  args_string("-o", resized);
+  args_parse();
+
+  if (string_equal("", *image))
+    error("\nUsage: resize -i <image> -k <num> "
+          "[-s <stretched image>] [-o <resized image>]");
+
+  if (string_equal(*stretched, "")) {
+    *stretched = "img/stretched.png";
+    printf("Using default stretched image name (%s)\n", *stretched);
+  }
+  if (string_equal(*resized, "")) {
+    *resized = "img/resized.png";
+    printf("Using default resized image name (%s)\n", *resized);
+  }
+
+  test_resize(*image, *k, *stretched, *resized);
+  return 0;
+}

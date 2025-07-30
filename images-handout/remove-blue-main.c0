@@ -1,0 +1,80 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+#use <conio>
+#use <string>
+#use <img>
+#use <parse>
+#use <args>
+#use <util>
+
+void remove_blue_main(string input, string output)
+{
+  printf("Input image:  %s\n", input);
+  printf("Output image: %s\n", output);
+
+  /* Load source image */
+  image_t source = image_load(input);
+  if (source == NULL) error("Could not load source image");
+  int width = image_width(source);
+  int height = image_height(source);
+  pixel_t[] inpixels = image_data(source);
+
+  printf("Loaded image.  Dimensions are %d by %d.\n", width, height);
+
+  /* Run transformation */
+  printf("Removing blue channel..."); flush();
+  pixel_t[] gbpixels = remove_blue(inpixels, width, height);
+  printf("done.\n");
+  //@assert \length(gbpixels) == width*height;
+
+  /* Create destination image */
+  image_t dest = image_create(width, height);
+  pixel_t[] outpixels = image_data(dest);
+  for (int i = 0; i < width*height; i++)
+    //@loop_invariant 0 <= i;
+    {
+      outpixels[i] = gbpixels[i];
+    }
+
+  /* Save result */
+  printf("Saving output..."); flush();
+  image_save(dest, output);
+  printf("done.\n");
+}
+
+string default_output(string input, string name) {
+  int len = string_length(input);
+  if (!(len > 4 && string_equal(".png", string_sub(input, len-4, len)))) {
+    error("Input file does not end with .png");
+  }
+
+  string res = string_sub(input, 0, len-4);
+  res = string_join(res, "_");
+  res = string_join(res, name);
+  res = string_join(res, ".png");
+
+  return res;
+}
+
+int main() {
+  string *output = alloc(string);
+  string *input = alloc(string);
+
+  args_string("-o", output);
+  args_string("-i", input);
+  args_parse();
+
+  if (string_equal("", *input)) {
+    error("Usage: remove-blue -i <input image> [-o <output image>]");
+  }
+
+  if (string_equal("", *output)) {
+    *output = default_output(*input, "remove-blue");
+  }
+
+  remove_blue_main(*input, *output);
+
+  return 0;
+}

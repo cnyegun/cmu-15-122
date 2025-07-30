@@ -1,0 +1,83 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+#use <conio>
+#use <string>
+#use <args>
+#use <parse>
+#use <img>
+
+void save_to_file(pixel_t[] pixels, int width, int height,
+                  string filename, string comment)
+{
+  /* Create destination image */
+  image_t dest = image_create(width, height);
+  pixel_t[] outpixels = image_data(dest);
+  for (int i = 0; i < width*height; i++)
+  //@loop_invariant 0 <= i && i <= width*height;
+  {
+    outpixels[i] = pixels[i];
+  }
+
+  /* Save result */
+  printf("Saving %s %s ...", comment, filename); flush();
+  image_save(dest, filename);
+  printf("done.\n");
+}
+
+
+void test_cropped(string input_image,
+                  int left, int top, int width, int height,
+                  string cropped_image)
+{
+  /* Load image */
+  printf("Input image: %s\n", input_image);
+  image_t img = image_load(input_image);
+  if (img == NULL) error("Could not load image");
+  int i_width = image_width(img);
+  int i_height = image_height(img);
+  pixel_t[] input = image_data(img);
+  printf("\tLoaded image.  Dimensions are %d by %d.\n", i_width, i_height);
+
+  /* Cropping image */
+  printf("Cropping image %s at %dx%d+%d+%d ...", input_image,
+         width, height, left, top);
+  flush();
+  pixel_t[] c_img = crop(input, i_width, i_height, left, top, width, height);
+  printf("done.\n");
+  /*@assert \length(c_img) == width*height; @*/
+
+  save_to_file(c_img, width, height, cropped_image, "cropped image");
+}
+
+
+int main() {
+
+  string* image   = alloc(string);
+  int* left       = alloc(int);
+  int* top        = alloc(int);
+  int* width      = alloc(int);
+  int* height     = alloc(int);
+  string* cropped = alloc(string);
+
+  args_string("-i", image);
+  args_int("-l", left);
+  args_int("-t", top);
+  args_int("-w", width);
+  args_int("-h", height);
+  args_string("-o", cropped);
+  args_parse();
+
+  if (string_equal("", *image))
+    error("\nUsage: crop -i <image> -l <left> -t <top> -w <width> -h <height> "
+          "[-o <cropped image>]");
+
+  if (string_equal(*cropped, "")) {
+    *cropped = "img/cropped.png";
+    printf("Using default cropped image name (%s)\n", *cropped);
+  }
+
+  test_cropped(*image, *left, *top, *width, *height, *cropped);
+  return 0;
+}
