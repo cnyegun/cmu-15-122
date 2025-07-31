@@ -8,7 +8,7 @@
 #use <util>
 
 pixel_t[] remove_blue (pixel_t[] A, int width, int height)
-//@requires width > 0 && height > 0 && width <= int_max() / height;  // DOES NOT USE IMAGEUTIL!!!  // THIS IS ALSO BAD STYLE: THIS LINE HAS MORE THAN 80 CHARACTERS
+//@requires is_valid_imagesize(width, height);
 //@requires \length(A) == width*height;
 //@ensures \result != A;
 //@ensures \length(\result) == \length(A);
@@ -25,7 +25,12 @@ pixel_t[] remove_blue (pixel_t[] A, int width, int height)
       int index = get_index(j, i, width, height);
       //@assert 0 <= index && index < \length(A);
       //@assert \length(A) == \length(B);
-      B[index] = A[index] & 0xFFFFFF00;  // DOES NOT RESPECT THE PIXEL INTERFACE!!!  // THIS IS ALSO BAD STYLE: THIS LINE HAS MORE THAN 80 CHARACTERS
+      B[index] = make_pixel(
+        get_alpha(A[index]), 
+        get_red(A[index]), 
+        get_green(A[index]), 
+        0
+      );
     }
   }
 
