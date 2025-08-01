@@ -1,0 +1,107 @@
+int weighted_average(int i, int k, int p0, int q0)
+//@requires k >= 0;
+//@requires 0 <= i && i <= k;
+//@requires 0 <= p0 && p0 <= 255;
+//@requires 0 <= q0 && q0 <= 255;
+//@ensures 0 <= \result && \result <= 255;
+{
+    return ((k + 1 - i) * p0 + (i * q0)) / (k + 1);
+}
+
+pixel_t[] stretch_horizontally(pixel_t[] pixels, int width, int height, int k)
+//@requires is_valid_imagesize(width, height);
+//@requires k >= 0;
+//@requires is_valid_imagesize((k + 1) * width - k, height);
+//@requires \length(pixels) == width * height;
+//@ensures \length(\result) == ((k + 1) * width - k) * height;
+{
+    pixel_t[] buffer = alloc_array(pixel_t, ((k + 1) * width - k) * height);
+    int b_index = 0;
+
+    // row iteration 
+    for (int i = 0; i < height; i++)
+    {
+        // column item on row iteration
+        for (int j = 0; j < width - 1; j++)
+        {
+            int alpha = get_alpha(
+                pixels[get_index(j, i, width, height)]);
+            int red = get_red(
+                pixels[get_index(j, i, width, height)]);
+            int green = get_green(
+                pixels[get_index(j, i, width, height)]);
+            int blue = get_blue(
+                pixels[get_index(j, i, width, height)]);
+
+            int next_alpha = get_alpha(
+                pixels[get_index(j + 1, i, width, height)]);
+            int next_red = get_red(
+                pixels[get_index(j + 1, i, width, height)]);
+            int next_green = get_green(
+                pixels[get_index(j + 1, i, width, height)]);
+            int next_blue = get_blue(
+                pixels[get_index(j + 1, i, width, height)]);
+
+            for (int l = 0; l <= k; l++)
+            {
+                buffer[b_index] = make_pixel(
+                    weighted_average(l, k, alpha, next_alpha),
+                    weighted_average(l, k, red, next_red),
+                    weighted_average(l, k, green, next_green),
+                    weighted_average(l, k, blue, next_blue)
+                    ); 
+                b_index++;
+            }
+        }
+
+        buffer[b_index] = pixels[get_index(width - 1, i, width, height)];
+        b_index++;
+    }
+
+    return buffer;
+}
+
+pixel_t[] transpose(pixel_t[] pixels, int width, int height)
+//@requires is_valid_imagesize(width, height);
+//@requires \length(pixels) == width * height;
+//@ensures \length(\result) == width * height;
+{
+    pixel_t[] buffer = alloc_array(pixel_t, width * height);
+
+    for (int i = 0; i < height; i++) { // row
+        for (int j = 0; j < width; j++) { // column
+            buffer[j * height + i] = pixels[i * width + j];
+        }
+    }
+
+    return buffer;
+}
+
+pixel_t[] stretch_vertically(pixel_t[] pixels, int width, int height, int k)
+//@requires is_valid_imagesize(width, height);
+//@requires \length(pixels) == width * height;
+//@requires k >= 0;
+//@requires is_valid_imagesize(width, (k + 1) * height - k);
+//@ensures \length(\result) == width * ((k + 1) * height - k);
+{
+    pixel_t[] transposed = transpose(pixels, width, height);
+
+    pixel_t[] stretched = stretch_horizontally(transposed, height, width, k);
+
+    pixel_t[] result = transpose(stretched, (k+1)*height - k, width);
+
+    return result;
+}
+
+pixel_t[] upsize(pixel_t[] pixels, int width, int height, int k)
+//@requires is_valid_imagesize(width, height);
+//@requires k >= 0;
+//@requires \length(pixels) == width * height;
+//@ensures \length(\result) == ((k + 1) * width - k) * ((k + 1) * height - k);
+{
+    pixel_t[] buffer = stretch_horizontally(pixels, width, height, k);
+
+    buffer = stretch_vertically(buffer, ((k + 1) * width - k), height, k);
+
+    return buffer;
+}
