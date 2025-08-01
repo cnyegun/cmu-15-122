@@ -25,22 +25,22 @@ pixel_t[] stretch_horizontally(pixel_t[] pixels, int width, int height, int k)
         for (int j = 0; j < width - 1; j++)
         {
             int alpha = get_alpha(
-                pixels[get_index(j, i, width, height)]);
+                pixels[get_index(i, j, width, height)]);
             int red = get_red(
-                pixels[get_index(j, i, width, height)]);
+                pixels[get_index(i, j,  width, height)]);
             int green = get_green(
-                pixels[get_index(j, i, width, height)]);
+                pixels[get_index(i, j, width, height)]);
             int blue = get_blue(
-                pixels[get_index(j, i, width, height)]);
+                pixels[get_index(i, j, width, height)]);
 
             int next_alpha = get_alpha(
-                pixels[get_index(j + 1, i, width, height)]);
+                pixels[get_index(i, j + 1, width, height)]);
             int next_red = get_red(
-                pixels[get_index(j + 1, i, width, height)]);
+                pixels[get_index(i, j + 1, width, height)]);
             int next_green = get_green(
-                pixels[get_index(j + 1, i, width, height)]);
+                pixels[get_index(i, j + 1, width, height)]);
             int next_blue = get_blue(
-                pixels[get_index(j + 1, i, width, height)]);
+                pixels[get_index(i, j + 1, width, height)]);
 
             for (int l = 0; l <= k; l++)
             {
@@ -54,7 +54,7 @@ pixel_t[] stretch_horizontally(pixel_t[] pixels, int width, int height, int k)
             }
         }
 
-        buffer[b_index] = pixels[get_index(width - 1, i, width, height)];
+        buffer[b_index] = pixels[get_index(i, width - 1, width, height)];
         b_index++;
     }
 
