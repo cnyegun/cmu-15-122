@@ -1,0 +1,18 @@
+
+struct address {
+    string street_name;
+    string city;
+    string state;
+    int zip;
+}; typedef struct address addr;
+
+struct contact {
+    string name;
+    string phone_number;
+    string email;
+    addr* address;
+}; typedef struct contact cont;
+
+
+
+typedef cont* cont_t;

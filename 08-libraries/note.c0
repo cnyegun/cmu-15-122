@@ -1,0 +1,54 @@
+/*
+====================================================
+******************* INTERFACE **********************
+====================================================
+*/
+
+struct ssa_header {
+    int length;
+    string[] data;
+};
+
+typedef struct ssa_header ssa;
+
+typedef ssa* ssa_t;
+
+// typedef _______* ssa_t;
+int ssa_len(ssa_t A)
+/*@requires A != NULL;                   @*/
+/*@ensures \result >= 0;                 @*/;
+
+ssa_t ssa_new(int size)
+/*@requires size >= 0;                   @*/
+/*@ensures \result != NULL;              @*/
+/*@ensures ssa_len(\result) == size;     @*/;
+
+string ssa_get(ssa_t A, int i)
+/*@requires A != NULL;                   @*/
+/*@requires 0 <= i && i < ssa_len(A);    @*/;
+
+void ssa_set(ssa_t A, int i, string x)
+/*@requires A != NULL;                   @*/
+/*@requires 0 <= i && i < ssa_len(A);    @*/;
+
+
+/*
+====================================================
+**************** IMPLEMENTATION ********************
+====================================================
+*/
+
+int ssa_len(ssa* A)
+//@requires A != NULL;
+//@ensures \result == \length(A->data);
+{
+    return A->length;
+}
+
+string ssa_get(ssa* A, int i)
+//@requires A != NULL;
+//@requires 0 <= i && i < ssa_len(A);
+//@requires \length(A->data) == A->length;
+{
+    return A->data[i];
+}

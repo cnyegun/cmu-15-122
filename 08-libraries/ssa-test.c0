@@ -1,0 +1,42 @@
+#use <conio>
+
+// Client function that prints an SSA
+void display_this_ssa(ssa_t A)
+/*@requires A != NULL; @*/
+{
+  printf("\n");
+  for (int j = 0; j < ssa_len(A); j++)
+  //@loop_invariant 0 <= j;
+    {
+      printf("%d => %s\n", j, ssa_get(A, j));
+    }
+}
+
+
+int main () {
+
+  ssa_t A = ssa_new(3);
+  ssa_set(A, 0, "hello");
+  display_this_ssa(A);
+  ssa_set(A, 1, "world");
+  display_this_ssa(A);
+  ssa_set(A, 2, "new");
+  display_this_ssa(A);
+  ssa_print_internal(A);   // violating the interface for effect
+  printf("\n");            //   YOU SHOULD NEVER VIOLATE THE INTERFACE
+  ssa_print(A);            // do this instead or use display_this_ssa
+  printf("\n");
+
+  ssa_t B = ssa_new(3);
+  ssa_set(B, 0, "hello");
+  display_this_ssa(B);
+  ssa_set(B, 0, "world");
+  display_this_ssa(B);
+  ssa_set(B, 0, "new");
+  display_this_ssa(B);
+  ssa_print(B);
+  printf("\n");
+
+  printf("All tests passed!\n");
+  return 0;
+}
