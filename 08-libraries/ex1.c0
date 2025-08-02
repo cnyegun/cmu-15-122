@@ -1,3 +1,4 @@
+#use <conio>
 
 struct address {
     string street_name;
@@ -11,8 +12,36 @@ struct contact {
     string phone_number;
     string email;
     addr* address;
-}; typedef struct contact cont;
+}; typedef struct contact cont; 
 
+int main()
+{
+    addr* t_addr = alloc(addr);
+    t_addr->street_name = "Luong Son St.";
+    t_addr->city = "Phu Tho";
+    t_addr->state = "Viet Nam";   
+    t_addr->zip = 350256;
+
+    cont* t_cont = alloc(cont);
+    t_cont->name = "Bich Thuy";
+    t_cont->phone_number = "+84 934 245 256";
+    t_cont->email = "hoangb.thuy@gmail.com";
+    t_cont->address = t_addr;
+
+    // # PRINT contact
+
+    print("Name: "); println(t_cont->name);
+    print("Phone: "); println(t_cont->phone_number);
+    print("Email: "); println(t_cont->email);
+
+    println("Address: "); 
+    print("  Street: "); println(t_cont->address->street_name);
+    print("  City: "); println(t_cont->address->city);
+    print("  State: "); println(t_cont->address->state);
+    print("  ZIP: "); printint(t_cont->address->zip); print("\n");
+
+    return 0;
+}
 
 
 typedef cont* cont_t;

@@ -1,0 +1,191 @@
+/*
+=====================================================================
+*********************   IMPLEMENTATION  *****************************
+=====================================================================
+*/
+
+struct pixel_struct {
+    int alpha;
+    int red;
+    int green;
+    int blue;
+}; typedef struct pixel_struct pixel;
+
+bool is_pixel(pixel* p)
+{
+    return (p != NULL)                          &&
+           (0 <= p->alpha && p->alpha < 256)    &&
+           (0 <= p->red && p->red < 256)        &&
+           (0 <= p->green && p->green < 256)    &&
+           (0 <= p->blue && p->blue < 256);
+}
+
+pixel* make_pixel(int alpha, int red, int green, int blue)
+/*@requires 0 <= alpha && alpha < 256; @*/
+/*@requires 0 <= red && red < 256; @*/
+/*@requires 0 <= green && green < 256; @*/
+/*@requires 0 <= blue && blue < 256; @*/
+/*@ensures is_pixel(\result); @*/
+{
+    pixel* p = alloc(pixel);
+    p->alpha = alpha;
+    p->red = red;
+    p->green = green;
+    p->blue = blue;
+
+    return p;
+}
+
+int get_alpha(pixel* p)
+/*@requires is_pixel(p); @*/
+/*@ensures 0 <= \result && \result < 256; @*/
+{
+    return p->alpha;
+}
+
+int get_red(pixel* p)
+/*@requires is_pixel(p); @*/
+/*@ensures 0 <= \result && \result < 256; @*/
+{
+    return p->red;
+}
+
+int get_green(pixel* p)
+/*@requires is_pixel(p); @*/
+/*@ensures 0 <= \result && \result < 256; @*/
+{
+    return p->green;
+}
+
+int get_blue(pixel* p)
+/*@requires is_pixel(p); @*/
+/*@ensures 0 <= \result && \result < 256; @*/
+{
+    return p->blue;
+}
+
+pixel* set_alpha(pixel* p, int alpha)
+/*@requires 0 <= alpha && alpha < 256;             @*/
+/*@ensures get_alpha(\result) == alpha;             @*/
+/*@ensures get_red(\result) == get_red(p);          @*/
+/*@ensures get_green(\result) == get_green(p);      @*/
+/*@ensures get_blue(\result) == get_blue(p);        @*/
+/*@ensures is_pixel(\result); @*/
+{
+    return make_pixel(alpha,
+                      get_red(p),
+                      get_green(p),
+                      get_blue(p));
+}
+
+
+pixel* set_red(pixel* p, int red)
+/*@requires 0 <= red && red < 256;             @*/
+/*@ensures get_alpha(\result) == get_alpha(p);      @*/
+/*@ensures get_red(\result) == red;                 @*/
+/*@ensures get_green(\result) == get_green(p);      @*/
+/*@ensures get_blue(\result) == get_blue(p);        @*/
+/*@ensures is_pixel(\result); @*/
+{
+    return make_pixel(get_alpha(p),
+                      red,
+                      get_green(p),
+                      get_blue(p));
+}
+
+pixel* set_green(pixel* p, int green)
+/*@requires 0 <= green && green < 256;             @*/
+/*@ensures get_alpha(\result) == get_alpha(p);      @*/
+/*@ensures get_red(\result) == get_red(p);          @*/
+/*@ensures get_green(\result) == green;             @*/
+/*@ensures get_blue(\result) == get_blue(p);        @*/
+/*@ensures is_pixel(\result); @*/
+{
+    return make_pixel(get_alpha(p),
+                      get_red(p),
+                      green,
+                      get_blue(p));
+}
+
+pixel* set_blue(pixel* p, int blue)
+/*@requires 0 <= blue && blue < 256;             @*/
+/*@ensures get_alpha(\result) == get_alpha(p);       @*/
+/*@ensures get_red(\result) == get_red(p);          @*/
+/*@ensures get_green(\result) == get_green(p);      @*/
+/*@ensures get_blue(\result) == blue;               @*/
+/*@ensures is_pixel(\result); @*/
+{
+    return make_pixel(get_alpha(p),
+                      get_red(p),
+                      get_green(p),
+                      blue);
+}
+
+typedef pixel* pixel_t;
+
+/*
+=====================================================================
+**************************   INTERFACE   ****************************
+=====================================================================
+*/
+
+// typedef ___________ pixel_t;
+
+pixel_t make_pixel(int alpha, int red, int green, int blue)
+/*@requires 0 <= alpha && alpha < 256; @*/
+/*@requires 0 <= red && red < 256; @*/
+/*@requires 0 <= green && green < 256; @*/
+/*@requires 0 <= blue && blue < 256; @*/ ;
+
+int get_alpha(pixel_t p)
+/*@ensures 0 <= \result && \result < 256; @*/ ;
+
+int get_red(pixel_t p)
+/*@ensures 0 <= \result && \result < 256; @*/ ;
+
+int get_green(pixel_t p)
+/*@ensures 0 <= \result && \result < 256; @*/ ;
+
+int get_blue(pixel_t p)
+/*@ensures 0 <= \result && \result < 256; @*/ ;
+
+pixel_t set_alpha(pixel_t p, int alpha)
+/*@requires 0 <= alpha && alpha < 256;             @*/
+/*@ensures get_alpha(\result) == alpha;             @*/
+/*@ensures get_red(\result) == get_red(p);          @*/
+/*@ensures get_green(\result) == get_green(p);      @*/
+/*@ensures get_blue(\result) == get_blue(p);        @*/;
+
+
+pixel_t set_red(pixel_t p, int red)
+/*@requires 0 <= red && red < 256;                 @*/
+/*@ensures get_alpha(\result) == get_alpha(p);      @*/
+/*@ensures get_red(\result) == red;                 @*/
+/*@ensures get_green(\result) == get_green(p);      @*/
+/*@ensures get_blue(\result) == get_blue(p);        @*/;
+
+pixel_t set_green(pixel_t p, int green)
+/*@requires 0 <= green && green < 256;             @*/
+/*@ensures get_alpha(\result) == get_alpha(p);      @*/
+/*@ensures get_red(\result) == get_red(p);          @*/
+/*@ensures get_green(\result) == green;             @*/
+/*@ensures get_blue(\result) == get_blue(p);        @*/;
+
+pixel_t set_blue(pixel_t p, int blue)
+/*@requires 0 <= blue && blue < 256;               @*/
+/*@ensures get_alpha(\result) == get_alpha(p);       @*/
+/*@ensures get_red(\result) == get_red(p);          @*/
+/*@ensures get_green(\result) == get_green(p);      @*/
+/*@ensures get_blue(\result) == blue;               @*/;
+
+
+
+// EX6:
+
+pixel_t complement_pixel(pixel_t p)
+{
+    return make_pixel(get_alpha(p),
+                      255 - get_red(p),
+                      255 - get_green(p),
+                      255 - get_blue(p));
+}
