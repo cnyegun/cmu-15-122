@@ -1,0 +1,24 @@
+
+stack_t stack_copy(stack_t S)
+{
+    stack_t tmp = stack_new();
+    stack_t copy = stack_new();
+
+    // move all element from S to tmp
+    while (!empty_stack(S))
+    {
+        string x = pop(S);
+        push(tmp, x);
+    }
+
+    // move all element from tmp to S and copy
+    while (!empty_stack(tmp))
+    {
+        string x = pop(tmp);
+        push(S, x);
+        push(copy, x);
+    }
+
+    return copy;
+}
+

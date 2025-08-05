@@ -1,0 +1,25 @@
+bool stack_sorted_ascending(stack_t S)
+{
+    stack_t copy = stack_copy(S);
+
+    int prev;
+    if (!empty_stack(copy))
+    {
+        prev = pop(copy);
+    }
+
+    while (!empty_stack(copy))
+    {
+        int curr = pop(copy);
+        if (prev > curr) return false;
+        prev = curr;
+    }
+
+    return true;
+}
+
+bool stack_sorted_descending(stack_t S)
+{
+    stack_t reversed = stack_reverse(S);
+    return stack_sorted_ascending(reversed);
+}

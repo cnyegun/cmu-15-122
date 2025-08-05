@@ -1,0 +1,12 @@
+
+stack_t stack_reverse(stack_t S)
+{
+    stack_t reversed = stack_new();
+
+    while (!stack_empty(S))
+    {
+        push(reversed, pop(S));
+    }
+
+    return reversed;
+}
