@@ -1,0 +1,5 @@
+int find(int x, int[] A, int n)
+//@requires 0 <= n && n <= \length(A);
+{
+    
+}
