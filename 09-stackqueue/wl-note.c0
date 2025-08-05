@@ -1,0 +1,18 @@
+
+// typedef ______________* wl_t
+
+bool wl_empty(wl_t W)
+/*@requires W != NULL;                  @*/;
+
+wl_t wl_new()
+/*@ensures \result != NULL;             @*/
+/*@ensures wl_empty(\result);           @*/;
+
+void wl_add(wl_t W, string x)
+/*@requires W != NULL;                  @*/
+/*@ensures !wl_empty(W);                @*/;
+
+string wl_retrieve(wl_t W)
+/*@requires W != NULL;                  @*/
+/*@requires !wl_empty(W);               @*/; 
+

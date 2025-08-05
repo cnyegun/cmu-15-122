@@ -1,0 +1,47 @@
+#use <conio>
+#use <string>
+
+// Using the queue interface
+
+queue_t queue_copy(queue_t Q)
+//@requires Q != NULL;
+//@ensures \result != NULL;
+{
+  queue_t T = queue_new();
+  queue_t C = queue_new();
+
+  while (!queue_empty(Q)) {
+    string x = deq(Q);
+    enq(C, x);
+    enq(T, x);
+  }
+
+  // Q = T; // Doesn't change caller's queue
+  while (!queue_empty(T))
+    enq(Q, deq(T));
+
+  return C;
+}
+
+
+// Tests
+
+int main() {
+  queue_t Q = queue_new();
+  queue_print(Q); printf("\n");
+  enq(Q, "c");
+  queue_print(Q); printf("\n");
+  enq(Q, "d");
+  queue_print(Q); printf("\n");
+
+  queue_t Q2 = queue_copy(Q);
+  queue_print(Q2); printf("\n");
+  assert(string_equal(deq(Q),deq(Q2)));
+  assert(string_equal(deq(Q),deq(Q2)));
+  queue_print(Q2); printf("\n\n");
+
+  assert(queue_empty(Q) && queue_empty(Q2));
+
+  printf("All tests passed\n");
+  return 0;
+}
