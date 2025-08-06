@@ -14,7 +14,24 @@ bool check_word(string[] dict, int d, string w)
 //@requires \length(dict) == d;
 //@requires is_sorted(dict,0,d) && no_dupes(dict,0,d);
 {
-  return false;  // bogus
+  int lo = 0;
+  int hi = d - 1;
+
+  while (lo <= hi)
+  {
+    int mid = lo + (hi - lo) / 2;
+
+    if (string_equal(dict[mid], w))
+      return true;
+    
+    if (string_compare(dict[mid], w) < 0) {
+      lo = mid + 1;
+    } else {
+      hi = mid - 1;
+    }
+  }
+
+  return false;
 }
 
 int check_text_naive(string[] dict, int d, string[] text, int t, string[] miss)
@@ -25,7 +42,17 @@ int check_text_naive(string[] dict, int d, string[] text, int t, string[] miss)
 //@ensures 0 <= \result && \result <= t;
 //@ensures no_dupes(miss, 0, \result);
 {
-  return 0;  // bogus
+  int miss_count = 0;
+
+  for (int i = 0; i < t; i++)
+  {
+    if (!check_word(dict, d, text[i])) {
+      miss[miss_count] = text[i];
+      miss_count += 1;
+    }
+  }
+
+  return miss_count;
 }
 
 int check_sorted_text(string[] dict, int d, string[] text, int t, string[] miss)
@@ -37,17 +64,108 @@ int check_sorted_text(string[] dict, int d, string[] text, int t, string[] miss)
 //@ensures 0 <= \result && \result <= t;
 //@ensures is_sorted(miss, 0, \result) && no_dupes(miss, 0, \result);
 {
-  return 0;  // bogus
+  int i = 0; // text index
+  int j = 0; // dict index
+  int z = 0; // miss index
+
+  while (i < t && j < d)
+  {
+    int compare = string_compare(text[i], dict[j]);
+
+    if (compare == 0) {
+      i++;
+      j++;
+    } else if (compare > 0) {
+      j++;
+    } else {
+      //@assert compare < 0;
+      miss[z] = text[i];
+      z++;
+      i++;
+    }
+  }
+
+  while (i < t) {
+    miss[z] = text[i];
+    z++; 
+    i++;
+  }
+
+  return z;
 }
 
 int merge(string[] A, int lo1, int hi1, int lo2, int hi2)
-//@requires 0 <= lo1 && lo1 < hi1 && hi1 <= lo2 && lo2 < hi2 && hi2 <= \length(A);
+/*@requires 0 <= lo1 && lo1 < hi1 && hi1 <= lo2 
+          && lo2 < hi2 && hi2 <= \length(A); @*/
 //@requires is_sorted(A, lo1, hi1) && no_dupes(A, lo1, hi1);
 //@requires is_sorted(A, lo2, hi2) && no_dupes(A, lo2, hi2);
 //@ensures 0 <= \result && \result <= hi2 - lo1;
 //@ensures is_sorted(A, lo1, lo1 + \result) && no_dupes(A, lo1, lo1 + \result);
 {
-  return 0; // bogus
+  string[] lo_tmp = alloc_array(string, hi1 - lo1);
+  string[] hi_tmp = alloc_array(string, hi2 - lo2);
+
+  for (int i = 0; i < hi1 - lo1; i++)
+    lo_tmp[i] = A[lo1 + i];
+
+  for (int i = 0; i < hi2 - lo2; i++)
+    hi_tmp[i] = A[lo2 + i];
+
+  int i = 0; 
+  int j = 0; 
+  int k = lo1; 
+  int count = 0;
+  string prev = "";
+
+  while (i < hi1 - lo1 && j < hi2 - lo2)
+  {
+    int compare = string_compare(lo_tmp[i], hi_tmp[j]);
+    if (compare > 0) {
+      if (!string_equal(prev, hi_tmp[j])) {
+        A[k] = hi_tmp[j];
+        prev = hi_tmp[j];
+        k++;
+        count++;
+      }
+      j++;
+    } else if (compare < 0) {
+      if (!string_equal(prev, lo_tmp[i])) {
+        A[k] = lo_tmp[i];
+        prev = lo_tmp[i];
+        k++;
+        count++;
+      }
+      i++;
+    } else { //@assert compare == 0;
+      if (!string_equal(prev, lo_tmp[i])) {
+        A[k] = lo_tmp[i];
+        prev = lo_tmp[i];
+        k++;
+        count++;
+      }
+
+      i++;
+      j++;
+    }
+  }
+
+  while (i < hi1 - lo1) {
+    if (!string_equal(prev, lo_tmp[i])) {
+      A[k] = lo_tmp[i];
+      k++; count++;
+    }   
+    i++;
+  }
+
+  while (j < hi2 - lo2) {
+    if (!string_equal(prev, hi_tmp[j])) {
+      A[k] = hi_tmp[j];
+      k++; count++;
+    }
+    j++; 
+  }
+
+  return count;
 }
 
 int mergesort(string[] A, int lo, int hi)
@@ -55,7 +173,12 @@ int mergesort(string[] A, int lo, int hi)
 //@ensures 0 <= \result && \result <= hi - lo;
 //@ensures is_sorted(A, lo, lo + \result) && no_dupes(A, lo, lo + \result);
 {
-  return 0; // bogus
+  if (hi - lo <= 1) return hi - lo;
+  int mid = lo + (hi - lo) / 2;
+
+  int hi1 = mergesort(A, lo, mid);
+  int hi2 = mergesort(A, mid, hi);
+  return merge(A, lo, lo + hi1, mid, mid + hi2);
 }
 
 int check_text_better(string[] dict, int d, string[] text, int t, string[] miss)

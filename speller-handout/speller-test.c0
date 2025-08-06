@@ -8,17 +8,67 @@
 // You are welcome to define helper functions for your tests
 
 int main() {
-  // Create a few texts and dictionaries by hand
+  // Create a few texts and dictionaries by hand 
 
+  // ["sloths", "are", "cute", "sloths", "are", "slow", "algae", "fur"]
+  string[] dups = alloc_array(string, 8);
+  // ["sloths", "are", "cute", "sloths", "are", "slow", "algae", "fur"]
+  dups[0] = "sloths"; dups[1] = "are"; dups[2] = "cute"; dups[3] = "sloths";
+  dups[4] = "are"; dups[5] = "slow"; dups[6] = "algae"; dups[7] = "fur";
 
   // Later on, read some texts and dictionaries from file
+  bundle_t dict_bundle = read_words("texts/dict.txt");
+  string[] dict = string_bundle_array(dict_bundle);
+  int d_length = string_bundle_length(dict_bundle);
+  
 
+  bundle_t sloth_bundle = read_words("texts/sloth.txt");
+  string[] sloth = string_bundle_array(sloth_bundle);
+  int s_length = string_bundle_length(sloth_bundle);
+  println("📚 Parsed texts/dict.txt");
 
   // Using them, test the functions check_word and check_text_better
   // you wrote in file speller.c0
+  print("\n+---------------------------+\n");
+  print(  "| Test: check_sorted_text() |\n");
+  print(  "+---------------------------+\n");
+  assert(check_word(dict, d_length, "snipper") == true);
+  assert(check_word(dict, d_length, "water") == true);
+  assert(check_word(dict, d_length, "kakznse") == false);
+  print(  "| Result: ✅ Passed         |\n");
+  print(  "+---------------------------+\n");
 
+  print("\n+---------------------------+\n");
+  print(  "| Test: check_text_naive()  |\n");
+  print(  "+---------------------------+\n");
+  string[] miss = alloc_array(string, s_length);
+  assert(check_text_naive(dict, d_length, sloth, s_length, miss) == 3);
+  print(  "| Result: ✅ Passed         |\n");
+  print(  "+---------------------------+\n");
 
+  print("\n+---------------------------+\n");
+  print(  "| Test: check_sorted_text() |\n");
+  print(  "+---------------------------+\n");
+  string[] s1 = alloc_array(string, 5);
+  s1[0] = "apple";
+  s1[1] = "banana";
+  s1[2] = "carroti";
+  s1[3] = "dragonfruit";
+  s1[4] = "elderberry";
 
-  printf("All tests passed!\n");
+  string[] miss2 = alloc_array(string, 5);
+  assert(check_sorted_text(dict, d_length, s1, 5, miss2) == 2);
+  print(  "| Result: ✅ Passed         |\n");
+  print(  "+---------------------------+\n");
+
+  print("\n+---------------------------+\n");
+  print(  "| Test: mergesort()         |\n");
+  print(  "+---------------------------+\n");
+  assert(mergesort(dups, 0, 8) == 6);
+  print(  "| Result: ✅ Passed         |\n");
+  print(  "+---------------------------+\n");
+
+  printf("\nAll tests passed!🏅\n");
+
   return 0;
 }

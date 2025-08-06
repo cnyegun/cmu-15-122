@@ -1,0 +1,75 @@
+void merge(int[] A, int lo, int mid, int hi)
+{
+    int[] lo_tmp = alloc_array(int, mid - lo);
+    int[] hi_tmp = alloc_array(int, hi - mid);
+
+    // copy data to tmp arrays 
+    for (int i = 0; i < mid - lo; i++)
+        lo_tmp[i] = A[lo + i];
+    
+    for (int i = 0; i < hi - mid; i++)
+        hi_tmp[i] = A[mid + i];
+
+    int i = 0;
+    int j = 0;
+    int k = lo;
+
+    while (i < mid - lo && j < hi - mid) {
+        if (lo_tmp[i] < hi_tmp[j]) {
+            A[k] = lo_tmp[i];
+            i++;
+        } else {
+            A[k] = hi_tmp[j];
+            j++;
+        }
+
+        k++;
+    }
+
+    // copy remaining if any
+
+    while (i < mid - lo) {
+        A[k] = lo_tmp[i];
+        i++;
+        k++;
+    }
+
+    while (j < hi - mid) {
+        A[k] = hi_tmp[j];
+        j++;
+        k++;
+    }
+}
+
+void mergesort(int[] A, int lo, int hi)
+{
+    if (hi - lo <= 1) return;
+
+    int mid = lo + (hi - lo) / 2;
+
+    mergesort(A, lo, mid); 
+    mergesort(A, mid, hi); 
+    merge(A, lo, mid, hi);
+}
+
+
+
+
+int main()
+{
+    int n = 5;
+    int[] A = alloc_array(int, n);
+    A[0] = 3; A[1] = 2; A[2] = 5; A[3] = 9; A[4] = 1;
+    // A[] = {3,2,5,9,1};
+
+    mergesort(A, 0, n);
+
+    // A[] = {1,2,3,5,9};
+
+    for (int i = 0; i < n; i++) {
+        printint(A[i]);
+        print("\n");
+    }
+
+    return 0;
+}
