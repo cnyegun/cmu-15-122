@@ -1,0 +1,26 @@
+void stack_sort(stack_t S)
+//@ensures stack_sorted_ascending(S);
+{
+    stack_t tmp = stack_new();
+
+    while (!empty_stack(S))
+    //@loop_invariant stack_sorted_descending(tmp);
+    {
+        int x = pop(S);
+        if (empty_stack(tmp) || peek(tmp) > x) {
+            push(tmp, x);
+        } else {
+            while (!empty_stack(tmp) && peek(tmp) < x) {
+                int y = pop(tmp);
+                push(S, y);
+            }
+            push(tmp, x);
+        }
+    }
+
+    while(!empty_stack(tmp))
+    //@loop_invariant stack_sorted_ascending(S);
+    {
+        push(S, pop(tmp));
+    }
+}

@@ -1,4 +1,4 @@
-bool stack_sorted_ascending(stack_t S)
+bool stack_sorted_descending(stack_t S)
 {
     stack_t copy = stack_copy(S);
 
@@ -18,8 +18,8 @@ bool stack_sorted_ascending(stack_t S)
     return true;
 }
 
-bool stack_sorted_descending(stack_t S)
+bool stack_sorted_ascending(stack_t S)
 {
     stack_t reversed = stack_reverse(S);
-    return stack_sorted_ascending(reversed);
+    return stack_sorted_descending(reversed);
 }

@@ -1,0 +1,20 @@
+
+int queue_sum(queue_t Q)
+{
+    int sum = 0;
+    queue_t tmp = queue_new();
+
+    while (!queue_empty(Q))
+    {
+        int x = deq(Q);
+        sum += x;
+        enq(tmp, x);
+    }
+
+    while (!queue_empty(tmp))
+    {
+        enq(Q, deq(tmp));
+    }
+
+    return sum;
+}
