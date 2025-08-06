@@ -1,0 +1,23 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+#use <args>
+#use <conio>
+
+// Experiment with me!
+
+int main() {
+  args_t args = args_parse();
+  int argc = args->argc;         // number of command line arguments
+  string[] argv = args->argv;    // command line arguments
+
+  for (int i = 0; i < argc; i++)
+  //@loop_invariant 0 <= i && i <= argc;
+  {
+    printf("Arg #%d: %s\n", i, argv[i]);
+  }
+
+  printf("Number of arguments printed: %d\n", argc);
+  return 0;
+}

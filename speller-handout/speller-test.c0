@@ -1,0 +1,24 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+#use <conio>
+#use <parse>
+
+// You are welcome to define helper functions for your tests
+
+int main() {
+  // Create a few texts and dictionaries by hand
+
+
+  // Later on, read some texts and dictionaries from file
+
+
+  // Using them, test the functions check_word and check_text_better
+  // you wrote in file speller.c0
+
+
+
+  printf("All tests passed!\n");
+  return 0;
+}
