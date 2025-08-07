@@ -1,0 +1,50 @@
+typedef int elem;
+typedef struct list_node list;
+
+struct list_node {
+    elem data;
+    struct list_node* next;
+};
+
+
+bool rec_is_segment(list* start, list* end) {
+    if (start == NULL) return false;
+    if (start == end) return true;
+
+    return is_segment(start->next; end);
+}
+
+bool while_is_segment(list* start, list* end) {
+    list* l = start;
+
+    while (l != NULL) {
+        if (l == end) return true;
+        l = l->next;
+    } 
+
+    return false;
+}
+
+bool for_is_segment(list* start, list* end) {
+    for (list* l = start; l != NULL; l = l->next) {
+        if (l == end) return true;
+    }
+
+    return false;
+}
+
+bool is_acyclic(list* start) {
+    if (start == NULL) return true;
+
+    list* h = start;
+    list* t = start->next;
+
+    while (h != t) {
+        if (h == NULL || h->next == NULL)
+            return true;
+        h = h->next->next;
+        t = t->next;
+    }
+
+    return false;
+}
