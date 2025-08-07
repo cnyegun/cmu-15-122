@@ -1,0 +1,12 @@
+
+int size(stack_t S)
+//@requires S != NULL;
+{
+    if (stack_empty(S)) return 0;
+
+    string tmp = pop(S);
+    int result = 1 + size(S);
+    push(S, tmp);
+
+    return result;
+}

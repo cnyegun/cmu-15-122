@@ -1,0 +1,12 @@
+
+void reverse(queue_t Q)
+//@requires Q != NULL;
+{
+    stack_t tmp = stack_new();
+
+    while (!empty_queue(Q))
+        push(tmp, deq(Q));
+
+    while (!empty_stack(tmp))
+        enq(Q, pop(tmp));
+}
