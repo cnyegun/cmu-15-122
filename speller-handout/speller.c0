@@ -152,6 +152,7 @@ int merge(string[] A, int lo1, int hi1, int lo2, int hi2)
   while (i < hi1 - lo1) {
     if (!string_equal(prev, lo_tmp[i])) {
       A[k] = lo_tmp[i];
+      prev = lo_tmp[i];
       k++; count++;
     }   
     i++;
@@ -160,6 +161,7 @@ int merge(string[] A, int lo1, int hi1, int lo2, int hi2)
   while (j < hi2 - lo2) {
     if (!string_equal(prev, hi_tmp[j])) {
       A[k] = hi_tmp[j];
+      prev = hi_tmp[j];
       k++; count++;
     }
     j++; 
@@ -176,9 +178,9 @@ int mergesort(string[] A, int lo, int hi)
   if (hi - lo <= 1) return hi - lo;
   int mid = lo + (hi - lo) / 2;
 
-  int hi1 = mergesort(A, lo, mid);
-  int hi2 = mergesort(A, mid, hi);
-  return merge(A, lo, lo + hi1, mid, mid + hi2);
+  int len1 = mergesort(A, lo, mid);
+  int len2 = mergesort(A, mid, hi);
+  return merge(A, lo, lo + len1, mid, mid + len2);
 }
 
 int check_text_better(string[] dict, int d, string[] text, int t, string[] miss)
@@ -189,5 +191,9 @@ int check_text_better(string[] dict, int d, string[] text, int t, string[] miss)
 //@ensures 0 <= \result && \result <= t;
 //@ensures is_sorted(miss, 0, \result) && no_dupes(miss, 0, \result);
 {
-  return 0;  // bogus
+  int t_new = mergesort(text, 0, t);
+  //@assert(is_sorted(text, 0, t_new));
+  //@assert(no_dupes(text, 0, t_new));
+
+  return check_sorted_text(dict, d, text, t_new, miss);
 }
