@@ -1,0 +1,15 @@
+int lseg_len(list* start, list* end)
+//@requires is_acyclic(start, end);
+//@requires is_segment(start, end);
+{
+    int l = 0;
+    list* idx = start;
+
+    while(idx != end)
+    {
+        l++;
+        idx = idx->next;
+    }
+    
+    return l;
+}

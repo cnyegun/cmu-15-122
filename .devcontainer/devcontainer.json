@@ -1,0 +1,9 @@
+{
+  "name": "C0 Development",
+  "context": "..",
+  "dockerFile": "../Dockerfile",
+  "workspaceFolder": "/work",
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/work,type=bind"
+  ]
+}

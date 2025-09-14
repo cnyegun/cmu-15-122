@@ -1,0 +1,23 @@
+bool is_in_lseg(int x, list* start, list* end)
+//@requires is_segment(start, end);
+{
+    for (list* idx = start; idx != end; idx = idx->next) {
+        if (x == idx->data) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+bool is_sorted_lseg(list* start, list* end)
+//@requires is_segment(start, end);
+{
+    for (list* i = start; i != end; i = i->next) {
+        if (i->data > i->next->data) {
+            return false;
+        }
+    }
+    
+    return true;
+}

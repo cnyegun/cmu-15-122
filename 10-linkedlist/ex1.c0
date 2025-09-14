@@ -1,0 +1,16 @@
+bool is_sum(list* start, list* end, int sum)
+//@requires is_acyclic(start, end);
+//@requires is_segment(start, end);
+//@ensures is_segment(start, end);
+{
+    list* idx = start;
+    int sum_so_far = 0;
+
+    while(idx != end)
+    {
+        sum_so_far += idx->data;
+        idx = idx->next;
+    }
+
+    return (sum_so_far == sum);
+}

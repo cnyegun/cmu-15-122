@@ -1,0 +1,30 @@
+int lseg_binsearch(int x, list* start, list* end)
+//@requires is_segment(start, end);
+//@requires is_sorted_lseg(start, end);
+/*@ensures (\result == -1 && !is_in_lseg(x, start, end))
+        || (0 <= \result && \result < lseg_len(start, end) 
+            && ith(start, \result) == x); @*/ ;
+{
+    return binsearch(x, start, 0, lseg_len(start, end));
+}
+
+int binsearch(int x, list* start, int lo, int hi)
+{
+    if (lo >= hi) return -1;
+
+    int mid = lo + (hi - lo) / 2;
+    int ith_mid = ith(start, mid);
+
+
+    if (ith_mid == x) {
+        return mid;
+    }
+
+    else if (ith_mid > x) {
+        return binsearch(x, start, lo, mid);
+    }
+    
+    else {
+        return binsearch(x, start, mid + 1, hi);
+    }
+}
