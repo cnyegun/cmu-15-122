@@ -1,0 +1,18 @@
+- Data struct of hash tables 
+- Implement a basic interface of dictionaries
+- Library's interface vs library's implementation
+- Some library requires some operation provided by user to work correctly
+- ds and operations called `library`
+  code that uses the library called `client`
+- Hash dict is a complex library
+	>Requires the client to supply code and functions
+- Complex libraries consist of: - client interface
+								- implementation
+								- library interface
+- The client can't see the implementation
+
+- Structure : [client interface]  -> client need to define datatype/functions
+			  [implementation]	  -> client can't see 
+			  [library interface] -> functions that the library provide to client
+
+

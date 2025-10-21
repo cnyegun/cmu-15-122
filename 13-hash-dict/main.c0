@@ -1,0 +1,139 @@
+// make_entry(int id, char[] grades);
+
+void print_entries(entry[] es, int n)
+//@requires 0 <= n && n <= \length(es);
+{
+	println("--------");
+	for (int i = 0; i < n; i++) {
+		printf("Student ID: %d\n",es[i]->id);
+		print( "Grades    : ");
+		for (int j = 0; j < es[i]->grades_len; j++) {
+			printf("[%c] ",es[i]->grades[j]);
+		}
+		println("");
+		println("--------");
+	}
+}
+
+//*
+int main() {
+	int id1 = 52717234;
+	int grades1_len = 3;
+	char[] grades1 = alloc_array(char, grades1_len);
+	grades1[0] = 'B';
+	grades1[1] = 'D';
+	grades1[2] = 'F';
+
+	int id2 = 34566234;
+	int grades2_len = 4;
+	char[] grades2 = alloc_array(char, grades2_len);
+	grades2[0] = 'E';
+	grades2[1] = 'A';
+	grades2[2] = 'B';
+	grades2[3] = 'F';
+
+	entry e1 = make_entry(id1, grades1, grades1_len);
+	entry e2 = make_entry(id2, grades2, grades2_len);
+
+	hdict_t H = hdict_new(1);
+
+	//@assert hdict_lookup(H, entry_key(e1)) == NULL;
+	hdict_insert(H, e1);
+	hdict_insert(H, e2);
+	//@assert hdict_lookup(H, entry_key(e2)) == e2;
+	//@assert hdict_lookup(H, entry_key(e1)) == e1;
+	//@assert hdict_size(H) == 2;
+
+	hdict_delete(H, entry_key(e1));
+	//@assert hdict_size(H) == 1;
+	//@assert hdict_lookup(H, entry_key(e1)) == NULL;
+
+	entry[] tab = hdict_tabulate(H);
+	int n_tab = hdict_size(H);
+	print_entries(tab, n_tab);
+
+	//H = hdict_remove(H, id2);
+
+	display_structure(H);
+	println("All tests passed!");
+	return 0;
+}
+
+//*/
+/*
+int main() {
+    hdict_t H = hdict_new(1);   // start tiny, will need to grow
+
+    for (int i = 0; i < 20; i++) {
+        int id = 50000000 + i * 12345;   // distinct student IDs
+
+        // create some variable-length grade arrays
+        int grades_len = (i % 5) + 2;    // length 2–6
+        char[] grades = alloc_array(char, grades_len);
+
+        // fill grades with letters that vary by i
+        for (int j = 0; j < grades_len; j++) {
+			grades[j] = 'A';
+        }
+
+        entry e = make_entry(id, grades, grades_len);
+
+        // optional: check lookup before insert
+        //@assert hdict_lookup(H, entry_key(e)) == NULL;
+
+        H = hdict_insert(H, e);
+
+        // optional: check after insertion
+        //@assert hdict_lookup(H, entry_key(e)) == e;
+    }
+
+    //@assert hdict_size(H) == 20;
+
+    entry[] tab = hdict_tabulate(H);
+    int n_tab = hdict_size(H);
+    print_entries(tab, n_tab);
+	printf("H->capacity: %d\n", hdict_capacity(H));
+    println("Inserted 20 entries successfully!");
+	display_structure(H);
+    return 0;
+}
+
+
+*/
+/*
+int main() {
+    hdict_t H = hdict_new(1);   // start tiny to force multiple resizes
+
+    for (int i = 0; i < 100; i++) {
+        int id = 50000000 + i * 12345;   // unique-ish student IDs
+
+        int grades_len = (i % 5) + 2;    // grade array length 2–6
+        char[] grades = alloc_array(char, grades_len);
+
+        // fill grades with some pattern (simple since char arithmetic is restricted)
+        for (int j = 0; j < grades_len; j++) {
+            grades[j] = 'A';   // or use grade_letters[(i + j) % 6] if allowed
+        }
+
+        entry e = make_entry(id, grades, grades_len);
+
+        //@assert hdict_lookup(H, entry_key(e)) == NULL;
+
+        hdict_insert(H, e);   // important: capture possible new pointer
+
+        //@assert hdict_lookup(H, entry_key(e)) == e;
+    }
+
+    //@assert hdict_size(H) == 100;
+
+    entry[] tab = hdict_tabulate(H);
+    int n_tab = hdict_size(H);
+    print_entries(tab, n_tab);
+
+    printf("H->capacity: %d\n", hdict_capacity(H));
+    println("Inserted 100 entries successfully!");
+    display_structure(H);  // visualize internal chaining
+
+    return 0;
+}
+*/

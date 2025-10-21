@@ -1,0 +1,176 @@
+/*
+
+AMORTIZED ANALYSIS
+
+  COUNTER      #USER    COST	TOTAL COST
+0 0 0 0 0 0 	
+0 0 0 0 0 1      1       1          1
+
+0 0 0 0 0 0 	
+0 0 0 0 1 0      2       2          3
+
+0 0 0 0 0 0 	
+0 0 0 0 1 1      3       1          4
+
+0 0 0 0 0 0 	
+0 0 0 1 0 0      4       3          7
+
+0 0 0 0 0 0 	
+0 0 0 1 0 1      5       1          8
+
+REQUIREMENT: all user must pay the same amount x$
+			 make x as small as possible
+			 always have enough cash to pay the power bill 
+
+
+OBSERVATION: total_cost < 2 * number_of_users
+
+IDEA: Charge each user $2
+
+TRY: Charge $2 each
+
+  COUNTER      #USER    COST   TOTAL COST   SAVINGS
+0 0 0 0 0 0 	
+0 0 0 0 0 1      1       1          1		   1
+
+0 0 0 0 0 0 	
+0 0 0 0 1 0      2       2          3          1
+
+0 0 0 0 0 0 	
+0 0 0 0 1 1      3       1          4		   2
+
+0 0 0 0 0 0 	
+0 0 0 1 0 0      4       3          7		   1
+
+0 0 0 0 0 0 	
+0 0 0 1 0 1      5       1          8		   2
+
+Amortized Analysys:
+1. Invent a notion of Token (unit of cost)
+2. How many tokens to charge for each operation
+3. Invariant (for any state of the data structure
+	how many tokens need to be saved
+4. Prove that every operation preserves the invariant
+
+How to calculate the amortized cost?
+1. Draw a short sequence of operations
+2. Write down cost for each operation
+3. Write down total cost up to each operation
+4. Divide the total cost by the number of operations up to it 
+5. Round up
+
+//////////////////////////////////////////////////////////////
+
+Unbounded Array
+
+*/
+
+struct uba_header {
+	int size;		// 0 <= size && size < limit
+	int limit;		// 0 < limit
+	string[] data;  // \length(data) == limit
+};
+
+typedef uba_header uba;
+
+bool is_array_expected_length(string[] A, int length) {
+	//@assert \length(A) == length;
+	return true;
+}
+
+bool is_uba(uba* A) {
+	return A != NULL
+		&& 0 <= A->size
+		&& A->size < A->limit
+		&& is_array_expected_length(A->data, A->limit);
+}
+
+int uba_len(uba* A)
+//@requires is_uba(A);
+//@ensures 0 <= \result && \result < \length(A->data);
+{
+	return A->size;
+}
+
+uba* uba_new(int size)
+//@requires size >= 0;
+//@ensures is_uba(\result);
+//@ensures uba_len(\result) == size;
+{
+	uba* A = alloc(uba);
+	int limit = size == 0 ? 1 : size * 2;
+	A->size = size;
+	A->limit = limit;
+	A->data = alloc_array(string, limit);
+	return A;
+}
+
+string uba_get(uba* A, int i) 
+//@requires is_uba(A);
+//@requires 0 <= i && i < uba_len(A);
+{
+	return A->data[i];
+}
+
+void uba_set(uba* A, int i, string s)
+//@requires is_uba(A);
+//@requires 0 <= i && i < uba_len(A);
+//@ensures is_uba(A);
+//@ensures uba_get(A, i) == s;
+{
+	A->data[i] = s;
+}
+
+void uba_add(uba* A, string x)
+//@requires is_uba(A);
+//@ensures is_uba(A);
+{
+	A->data[A->size] = x;
+	(A->size)++;
+
+	if (A->size < A->limit) return;
+	assert(A->limit <= int_max() / 2);
+	uba_resize(A, A->limit * 2);
+}
+
+void uba_resize(uba* A, int new_limit)
+//@requires A != NULL;
+//@requires 0 <= A->size && A->size < new_limit;
+//@requires \length(A->data) == A->limit;
+//@ensures is_uba(A);
+{
+	string[] B = alloc_array(string, new_limit);
+	for (int i = 0; i < A->size; i++) 
+	//@loop_invariant 0 <= i && i <= A->size;
+	{
+		B[i] = A->data[i];
+	}
+
+	A->limit = new_limit;
+	A->data = B;
+}
+
+// Client-side type (abstract)
+
+int uba_len(uba_t A) // O(1)
+//@requires A != NULL;
+//@ensures \result >= 0;
+
+uba_t uba_new(int size)
+//@requires size >= 0;
+//@ensures \result != NULL;
+//@ensures uba_len(\result) == size;
+
+string uba_get(uba_t A, int i) // O(1)
+//@requires A != NULL;
+//@requires 0 <= i && i < uba_len(A);
+
+void uba_set(uba_t A, int i, string s) // O(1) amt
+//@requires A != NULL;
+//@requires 0 <= i && i < uba_len(A);
+
+void uba_add(uba_t A, string s) // O(1) amt
+//@requires A != NULL;
+//@requires 0 < uba_len(A);
+
+typedef uba* uba_t;

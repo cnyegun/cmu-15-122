@@ -1,0 +1,61 @@
+#use <conio>
+/*
+------------------------------------------------------------
+# GENERIC Pointer
+* WHAT:
+
+>>> void* q;
+
+any pointer can be turned into a void* 
+>>> int* p;
+>>> void* q = (void*)p;
+
+and later can be cast back into original type
+>>> int* r = (int*)q;
+
+important: they still point to the same address
+	the only different is their own type (int*, void*)
+
+Do: - Cast to orignal type
+	- Compare equality 
+	(addresses comparison not value comparison)
+	- Assign to a void* variable
+
+Don't: 
+	- Dereference: void x = *q1;
+	- Allocate: void* q4 = alloc(void);
+		(remember: void is not a type)
+	- Cast to type other than original
+		(the compiler remembers what is its original type)
+
+NULL:
+- is a pointer of any type including void*
+eg: int* p = NULL; void* q = NULL;
+- NULL variable of void* type has every tag except void*
+(so you can just convert void* q = NULL to anytype you want!)
+>>> void* q = NULL;
+(except: >>> void* r = (void*)q;
+>>> void* r = (void*)(int*)(void*)(string*)q;
+------------------------------------------------------------
+
+*/
+
+int main() {
+	void* q;
+
+	int* n = alloc(int);
+	*n = 42;
+
+	string* s = alloc(string);
+	*s = "hello";
+
+	q = (void*)n;
+	//@assert \hastag(int*, q);
+	printf("%d\n", *(int*)q);
+
+	q = (void*)s;
+	//@assert \hastag(string*, q);
+	printf("%s\n", *(string*)q);
+
+	return 0;
+}

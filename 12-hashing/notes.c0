@@ -1,0 +1,31 @@
+#use <conio>
+#use <rand>
+
+/*
+### LECTURE 12: HASH TABLES
+
+* WHAT is a dictionary: 
+  - Also called "associateive arrays" and "maps" 
+  - Similar to arrays, not indexed by `integers` 
+  	but other form of data eg: string
+  - Popular implementation: hash tables
+
+ABOUT table:
+- Numerical Key -> PRNG -> uniformly distributed number %m -> Table Index
+			 (hash function)			(hash value)		  (hash index)	
+- Need to be evenly distributed to assure O(1) amortized lookup and insert
+- common form of PRNG f(x) = a * x + c mod d
+- d = 2 ^ 32 with 32-bit ints
+- to get uniform distribution:
+	a != 0
+	a and d to be relative primes
+	c and d to be relative primes
+ 	(linear congruential generator) (LCG)
+
+
+2. Keys, entries and values
+- key -> value
+- dict gets a key (not necessary a number) and returns a value
+- 
+*/
+

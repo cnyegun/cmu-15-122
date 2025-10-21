@@ -1,0 +1,217 @@
+#use <util> 
+#use <conio>
+
+/* library side implementation */
+typedef struct chain_node chain;
+struct chain_node {
+	entry data;
+	chain* next;
+};
+
+typedef struct hdict_header hdict;
+struct hdict_header {
+	int size;			// 0 <= size
+	int capacity;		// 0 < capacity
+	chain*[] table;		// \length(table) == capacity
+};
+
+
+bool is_hdict(hdict* H) {
+	return H != NULL
+		&& 0 <= H->size
+		&& 0 < H->capacity;
+		//&& is_array_expected_length(H->table, H->capacity);
+}
+
+int hdict_capacity(hdict* D)
+//@requires is_hdict(D);
+//@ensures \result > 0;
+{
+	return D->capacity;
+}
+
+void hdict_insert(hdict* H, entry e);
+
+int hdict_size(hdict* D)
+//@requires is_hdict(D);
+//@ensures \result >= 0;
+{
+	return D->size;
+}
+
+
+int index_of_key(hdict* H, key k)
+//@requires is_hdict(H);
+//@ensures 0 <= \result && \result < H->capacity;
+{
+	return key_hash(k, H->capacity);
+}
+
+hdict* hdict_new(int capacity)
+//@requires 0 < capacity;
+//@ensures is_hdict(\result);
+{
+	hdict* H = alloc(hdict);
+	H->size = 0;
+	H->capacity = capacity;
+	H->table = alloc_array(chain*, capacity);
+	return H;
+}
+
+entry hdict_lookup(hdict* H, key k)
+//@requires is_hdict(H);
+/*@ensures \result == NULL
+	|| key_equiv(entry_key(\result), k); @*/
+{
+	int i = index_of_key(H, k);
+	for (chain* p = H->table[i]; p != NULL; p = p->next) {
+		if (key_equiv(entry_key(p->data), k)) {
+			return p->data;
+		}
+	}
+	return NULL;
+}
+
+entry[] hdict_tabulate(hdict* D)
+//@requires is_hdict(D);
+//@ensures \length(\result) == hdict_size(D);
+{
+	int size = hdict_size(D);
+	int out_index = 0;
+	entry[] out = alloc_array(entry, size);
+	int table_len = D->capacity;
+	for (int i = 0; i < table_len; i++) {
+		if (D->table[i] != NULL) {
+			for (chain* p = D->table[i]; p != NULL; p = p->next) {
+				out[out_index] = p->data;
+				out_index++;
+			}
+		}
+	}
+	return out;
+}
+
+void display_structure(hdict* H)
+//@requires H != NULL;
+{
+	int capacity = hdict_capacity(H);
+	for (int i = 0; i < capacity; i++) {
+		printf("H[%d] ", i);
+		if (H->table[i] == NULL) {
+			print("NULL\n");
+		}
+		else {
+			for (chain* p = H->table[i]; p != NULL; p = p->next) {
+				print("-> X ");
+			}
+			println("");
+		}
+	}
+}
+
+void hdict_resize(hdict* H, int new_cap)
+//@requires is_hdict(H);
+//@ensures H->capacity == new_cap;
+{
+	chain*[] new_table = alloc_array(chain*, new_cap);
+	entry[] entries = hdict_tabulate(H);
+	H->table = new_table;
+	H->capacity = new_cap;
+	int old_size = H->size;
+	H->size = 0;
+
+	for (int i = 0; i < old_size; i++) {
+		hdict_insert(H, entries[i]);
+	}
+}
+
+void hdict_insert(hdict* H, entry e)
+//@requires is_hdict(H);
+//@requires e != NULL;
+//@ensures hdict_lookup(H, entry_key(e)) == e;
+{
+	key k = entry_key(e);
+	int i = index_of_key(H, k);
+	for (chain* p = H->table[i]; p != NULL; p = p->next) {
+		if (key_equiv(entry_key(p->data), k)) {
+			p->data = e;
+			return;
+		}
+	}
+	
+	chain* p = alloc(chain);
+	p->data = e;
+	p->next = H->table[i];
+	H->table[i] = p;
+	(H->size)++;
+
+	if ((H->size * 4) > (H->capacity * 3)) {
+		hdict_resize(H, 2 * H->capacity);
+	}
+}
+
+void hdict_delete(hdict* H, key k)
+//@requires is_hdict(H);
+//@ensures is_hdict(H);
+//@ensures hdict_lookup(H, k) == NULL;
+{
+	int i = index_of_key(H, k);
+	bool done = false;
+	chain* prev = H->table[i];
+	if (prev != NULL && key_equiv(entry_key(prev->data), k)) {
+		H->table[i] = prev->next;
+		(H->size)--;
+		done = true;
+	}
+	if (prev != NULL && !done) {
+		for (chain* p = prev->next; p != NULL; p = p->next) {
+			if (key_equiv(entry_key(p->data), k)) {
+				prev->next = p->next;
+				(H->size)--;
+				done = true;
+			}
+			prev = p;
+		}
+	}
+
+	if (done && 4 * H->size < H->capacity) {
+		hdict_resize(H, H->capacity/2 > 0 ? H->capacity/2 : 1);
+	}
+}
+
+/* library side types */
+
+typedef hdict* hdict_t;
+
+/* library side functions */
+hdict_t hdict_new(int capacity) 
+/*@requires capacity > 0;   @*/
+/*@ensures \result != NULL; @*/ ;
+
+entry hdict_lookup(hdict_t H, key k)
+/*@requires H != NULL; @*/
+/*@ensures \result == NULL 
+		|| key_equiv(k, entry_key(\result)); @*/ ;
+
+void hdict_insert(hdict_t H, entry e)
+/*@requires H != NULL && e != NULL; @*/
+/*@ensures hdict_lookup(H, entry_key(e)) == e; @*/ ;
+
+int hdict_size(hdict_t D)
+/*@requires D != NULL; @*/
+/*@ensures \result >= 0; @*/ ;
+
+int hdict_capacity(hdict_t D)
+/*@requires D != NULL; @*/
+/*@ensures \result > 0; @*/ ;
+
+entry[] hdict_tabulate(hdict_t D)
+/*@requires D != NULL; @*/
+/*@ensures \length(\result) == hdict_size(D); @*/ ;
+
+void display_structure(hdict_t H)
+/*@requires H != NULL; @*/ ;
+
+void hdict_delete(hdict_t H, key k)
+/*@requires H != NULL; @*/
+/*@ensures hdict_lookup(H, k) == NULL; @*/ ;

@@ -1,0 +1,45 @@
+#use <string>
+#use <util>
+/* client side types */
+
+struct wcount {
+	string word; // key
+	int count;   // other data
+};
+
+typedef struct wcount* entry;
+typedef string         key;
+
+int hash_string(string s) {
+	int len = string_length(s);
+	int h = 0;
+	for (int i = 0; i < len; i++)
+	//@loop_invariant 0 <= i;
+	{
+		int ch = char_ord(string_charat(s, i));
+		h = 1664525 * h + 1013904223;
+		h = h + ch;
+	}
+	return h;
+}
+
+key entry_key(entry e)
+//@requires e != NULL;
+{
+	return e->word;
+}
+
+int key_hash(key k, int m) {
+	return abs(hash_string(k) % m);
+}
+
+bool key_equiv(key k1, key k2) {
+	return string_equal(k1, k2);
+}
+
+entry make_entry(string w, int c) {
+	entry e = alloc(struct wcount);
+	e->word = w;
+	e->count = c;
+	return e;
+}

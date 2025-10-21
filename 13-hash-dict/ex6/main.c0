@@ -1,0 +1,12 @@
+#use <conio>
+
+int main() {
+	hdict_t H = hdict_new(1);
+	//@assert hdict_lookup(H, 6969) == NULL;
+	string* s1 = alloc(string);
+	*s1 = "nigger";
+	hdict_insert(H, 6969, s1);
+	//@assert hdict_lookup(H, 6969) == s1;
+	println("All tests passed!");
+	return 0;
+}

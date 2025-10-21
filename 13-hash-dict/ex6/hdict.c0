@@ -1,0 +1,94 @@
+#use <util>
+/************************* Client interface *************************/
+// typedef _____  key;
+// typedef _____* value;
+bool key_equiv(key k1, key k2);
+int key_hash(key k);
+/************************* Library implementation ************************/
+typedef struct chain_node chain;
+typedef struct hdict_header hdict;
+
+struct chain_node {
+	key key;
+	value value;  // != NULL
+	chain* next;
+};
+
+struct hdict_header {
+	int size;
+	int capacity;
+	chain*[] table;
+};
+
+bool is_hdict(hdict* H) {
+	return H != NULL
+		&& H->capacity > 0 
+		&& H->size >= 0;
+}
+
+hdict* hdict_new(int capacity)
+//@requires capacity > 0;
+//@ensures is_hdict(\result);
+//@ensures \result->capacity == capacity;
+{
+	hdict* H = alloc(hdict);
+	H->size = 0;
+	H->capacity = capacity;
+	H->table = alloc_array(chain*, capacity);
+	return H;
+}
+
+int key_to_index(hdict* H, key k)
+//@requires is_hdict(H);
+//@ensures 0 <= \result && \result < H->capacity;
+{
+	return abs(key_hash(k) % H->capacity);
+}
+
+value hdict_lookup(hdict* H, key k)
+//@requires is_hdict(H);
+{
+	int i = key_to_index(H, k);
+	for (chain* p = H->table[i]; p != NULL; p = p->next) {
+		if (key_equiv(p->key, k)) {
+			return p->value;
+		}
+	}
+	return NULL;
+}
+
+void hdict_insert(hdict* H, key k, value v)
+//@requires is_hdict(H);
+//@requires v != NULL;
+//@ensures hdict_lookup(H, k) == v;
+{
+	int i = key_to_index(H, k);
+	for (chain* p = H->table[i]; p != NULL; p = p->next) {
+		if (key_equiv(p->key, k)) {
+			p->value = v;
+			return;
+		}
+	}
+
+	chain* node = alloc(chain);
+	node->key = k;
+	node->value = v;
+	node->next = H->table[i];
+	H->table[i] = node;
+	(H->size)++;
+}
+
+/************************* Library interface ************************/
+typedef hdict* hdict_t;
+
+hdict_t hdict_new(int capacity)
+/*@requires capacity > 0; @*/
+/*@ensures \result != NULL; @*/;
+
+value hdict_lookup(hdict_t H, key k)
+/*@requires H != NULL; @*/;
+
+void hdict_insert(hdict_t H, key k, value v)
+/*@requires H != NULL; @*/
+/*@requires v != NULL; @*/
+/*@ensures hdict_lookup(H, k) == v; @*/;

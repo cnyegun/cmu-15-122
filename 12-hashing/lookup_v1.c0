@@ -1,0 +1,6 @@
+#use <conio>
+
+int main() {
+	string[] table = alloc_array(string, 5);
+	return 0;
+}

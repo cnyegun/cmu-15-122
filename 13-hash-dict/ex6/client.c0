@@ -1,0 +1,12 @@
+typedef int 	key;
+typedef string* value;
+
+bool key_equiv(key x, key y) {
+	return x == y;
+}
+
+int key_hash(key x) {
+	return 1664525 * x + 1013904223;
+}
+
+

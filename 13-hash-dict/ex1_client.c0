@@ -1,0 +1,38 @@
+#use <string>
+#use <util>
+/* client side types */
+
+struct student_grade {
+	int id; 	   // key
+	char[] grades;  // other data
+	int grades_len;
+};
+
+typedef struct student_grade* entry;
+typedef int			         key;
+
+int hash_int(key k) {
+	return 1664525 * k + 1013904223;
+}
+
+key entry_key(entry e)
+//@requires e != NULL;
+{
+	return e->id;
+}
+
+int key_hash(key k, int m) {
+	return abs(hash_int(k) % m);
+}
+
+bool key_equiv(key k1, key k2) {
+	return k1 == k2;
+}
+
+entry make_entry(int id, char[] grades, int grades_len) {
+	entry e = alloc(struct student_grade);
+	e->id = id;
+	e->grades = grades;
+	e->grades_len = grades_len;
+	return e;
+}

@@ -12,7 +12,7 @@ bool rec_is_segment(list* start, list* end) {
     if (start == end) return true;
 
     return is_segment(start->next, end);
-} 
+}
 
 bool while_is_segment(list* start, list* end) {
     list* l = start;

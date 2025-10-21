@@ -1,0 +1,97 @@
+// Collection of elemtns without duplicates
+// Operations:
+// 		- insert() 
+// 		- is_member()
+
+#use <util>
+/************************/
+/*** Client interface ***/
+/************************/
+// typedef _____ elem;
+bool elem_equiv(elem x, elem y);
+int elem_hash(elem x);
+/*************************/
+/*** Lib implementation **/
+/*************************/
+
+typedef struct hset_header hset;
+typedef struct chain_node chain;
+
+struct chain_node {
+	elem value;
+	chain* next;
+};
+struct hset_header {
+	int size;
+	int capacity;
+	chain*[] table;
+};
+
+bool is_hset(hset* H) {
+	return H != NULL
+		&& H->size >= 0
+		&& H->capacity > 0;
+}
+
+int elem_to_index(hset* H, elem e) 
+//@requires is_hset(H);
+//@ensures 0 <= \result && \result < H->capacity;
+{
+	return abs(elem_hash(e) % H->capacity);
+}
+
+hset* hset_new(int capacity) 
+//@requires capacity > 0;
+//@ensures is_hset(\result);
+{
+	hset* H = alloc(hset);
+	H->size = 0;
+	H->capacity = capacity;
+	H->table = alloc_array(chain*, capacity);
+	return H;
+}
+
+bool hset_contains(hset* H, elem x)
+//@requires is_hset(H);
+{
+	int i = elem_to_index(H, x);
+	for (chain* p = H->table[i]; p != NULL; p = p->next) {
+		if (elem_equiv(p->value, x)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void hset_add(hset* H, elem x) 
+//@requires is_hset(H);
+//@ensures hset_contains(H, x);
+{
+	if (hset_contains(H, x)) {
+		return;
+	}
+	int i = elem_to_index(H, x);
+	chain* p = alloc(chain);
+	p->value = x;
+	p->next = H->table[i];
+	H->table[i] = p;
+	(H->size)++;
+}
+
+
+/*************************/
+/*** Library interface ***/
+/*************************/
+
+typedef hset* hset_t;
+
+hset_t hset_new(int capacity)
+/*@requires capacity > 0; @*/
+/*@ensures \result != NULL; @*/;
+
+bool hset_contains(hset_t H, elem x)
+/*@requires H != NULL; @*/;
+
+void hset_add(hset_t H, elem x)
+/*@requires H != NULL; @*/
+/*@ensures hset_contains(H, x); @*/;

@@ -1,0 +1,10 @@
+#use <conio>
+
+int main() {
+	hset_t H = hset_new(5);
+	//@assert !hset_contains(H, 69);
+	hset_add(H, 69);
+	//@assert hset_contains(H, 69);
+	println("All tests passed!");
+	return 0;
+}

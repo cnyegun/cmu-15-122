@@ -1,0 +1,11 @@
+/************************/
+/*** Client interface ***/
+/************************/
+
+typedef int elem;
+bool elem_equiv(elem x, elem y) {
+	return x == y;
+}
+int elem_hash(elem x) {
+	return 1664525 * x + 1013904223;
+}
