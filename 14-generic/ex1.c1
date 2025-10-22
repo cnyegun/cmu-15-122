@@ -1,0 +1,62 @@
+#use <string>
+#use <conio>
+
+typedef struct list_node genlist;
+struct list_node {
+	void* data;
+	string tag; // records the actual type of data
+	genlist* next;
+};
+
+void print_linked_list(genlist* p)
+{
+	println("_____________________");
+	for (; p != NULL; p = p->next) {
+		if (string_equal(p->tag, "an_int")) {
+			printf("%d\n", *(int*)(p->data));
+		}
+		else if (string_equal(p->tag, "an_string")) {
+			printf("%s\n", *(string*)(p->data));
+		}
+		else {
+			error("Unrecognized type");
+		}
+	}
+	println("_____________________");
+}
+
+genlist* create_node(void* data, string tag, genlist* next) {
+	genlist* p = alloc(genlist);
+	p->data = data;
+	p->tag = tag;
+	p->next = next;
+	return p;
+}
+
+int main() {
+	int* x = alloc(int);
+	*x = 69;
+	int* y = alloc(int);
+	*y = 33;
+
+	string* a = alloc(string);
+	*a = "Lel";
+	string* b = alloc(string);
+	*b = "biggies";
+
+	genlist* node1 = create_node((void*)x, "an_int", NULL);
+	genlist* node2 = create_node((void*)a, "an_string", node1);
+	genlist* node3 = create_node((void*)y, "an_int", node2);
+	genlist* node4 = create_node((void*)b, "an_string", node3);
+
+	print_linked_list(node4);
+
+	println("First test done");
+
+	genlist* node_error = create_node((void*)b, "an_err", node2);
+
+	print_linked_list(node_error);
+	println("Second test done");
+
+	return 0;
+}

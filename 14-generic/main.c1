@@ -1,0 +1,55 @@
+#use <conio>
+
+/*****************************/
+/*** Client implementation ***/
+/*****************************/
+
+// typedef void* entry;
+// typedef void* key;
+
+typedef struct student_header student;
+struct student_header {
+	int id;			// key
+	string name;	
+};
+
+key entry_key(entry x)
+//@requires x != NULL && \hastag(student*, x);
+//@ensures \result != NULL && \hastag(int*, \result);
+{
+	int* k = alloc(int);
+	*k = ((student*)x)->id;
+	return (key)k;
+}
+
+int key_hash(key k)
+//@requires k != NULL && \hastag(int*, k);
+{
+	return 1664525 * (*(int*)k) + 1013904223;
+}
+
+bool key_equiv(key k1, key k2)
+//@requires k1 != NULL && k2 != NULL;
+//@requires \hastag(int*, k1) && \hastag(int*, k2);
+{
+	return *(int*)k1 == *(int*)k2;
+}
+
+void print_student(student* s)
+//@requires s != NULL;
+{
+	printf("StudentID: %d\nName: %s\n", s->id, s->name);
+}
+
+int main()
+{
+	hdict_t H = hdict_new(5, &entry_key, &key_hash, &key_equiv);
+	student* s1 = alloc(student);
+	s1->id = 6969;
+	s1->name = "Niggerio Sketchy";
+	//@assert hdict_lookup(H, entry_key((entry)s1)) == NULL;
+	hdict_insert(H, (entry)s1);
+	print_student((student*)(hdict_lookup(H, entry_key((entry)s1))));
+
+	return 0;
+}

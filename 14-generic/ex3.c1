@@ -1,0 +1,47 @@
+#use <conio>
+// Breakfast restaurant that sell pancakes and eggs.
+
+typedef struct pancakes pancakes;
+struct pancakes {
+	string type;
+	bool syrup;
+	int num;
+};
+
+typedef struct eggs eggs;
+struct eggs {
+	string style;
+	int num;
+};
+
+typedef struct customer customer;
+struct customer {
+	string name;
+	void* breakfast;
+};
+
+int main() {
+	customer*[] customers = alloc_array(customer*, 2);
+
+	eggs* janes = alloc(eggs);
+	janes->style = "scrambled";
+	janes->num = 3;
+
+	customers[0] = alloc(customer);
+	customers[0]->name = "Jane";
+	customers[0]->breakfast = (void*)janes;
+
+	pancakes* johns = alloc(pancakes);
+	johns->type = "blueberry";
+	johns->syrup = true;
+	johns->num = 2;
+
+	customers[1] = alloc(customer);
+	customers[1]->name = "John";
+	customers[1]->breakfast = (void*)johns;
+
+	printf("Style of eggs for %s: %s\n", (customers[0]->name), ((eggs*)(customers[0]->breakfast))->style);
+	printf("Type of pancake for %s: %s\n", (customers[1]->name), ((pancakes*)(customers[1]->breakfast))->type);
+
+	return 0;
+}

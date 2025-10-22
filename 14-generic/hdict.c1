@@ -1,0 +1,140 @@
+#use <util>
+typedef void* entry;
+typedef void* key;
+
+typedef key entry_key_fn(entry x)
+			/*@requires x != NULL; @*/;
+typedef int key_hash_fn(key k);
+typedef bool key_equiv_fn(key k1, key k2);
+
+/*************************/
+/*** Implementation ******/
+/*************************/
+
+typedef struct hdict_header hdict;
+typedef struct chain_node chain;
+
+struct chain_node {
+	entry data;
+	chain* next;
+};
+
+struct hdict_header {
+	int size; 	 // size >= 0 
+	int capacity;// capacity > 0
+	chain*[] table;
+	entry_key_fn* key; 	// != NULL;
+	key_hash_fn* hash;  // != NULL;
+	key_equiv_fn* equiv;// != NULL;
+};
+
+bool is_hdict(hdict* H) {
+	return H != NULL
+		&& H->size >= 0
+		&& H->capacity > 0;
+}
+
+key _entry_key(hdict* H, entry e)
+//@requires is_hdict(H);
+//@requires e != NULL;
+//@ensures \result != NULL;
+{
+	return (*H->key)(e);
+}
+
+int _key_hash(hdict* H, key k)
+//@requires is_hdict(H);
+//@requires k != NULL;
+{
+	return (*H->hash)(k);
+}
+
+bool _key_equiv(hdict* H, key k1, key k2)
+//@requires is_hdict(H);
+//@requires k1 != NULL && k2 != NULL;
+{
+	return (*H->equiv)(k1, k2);
+}
+
+int key_to_index(hdict* H, key k)
+//@requires is_hdict(H);
+//@requires k != NULL;
+//@ensures 0 <= \result && \result < H->capacity;
+{
+	return abs(_key_hash(H, k) % H->capacity);
+}
+
+hdict* hdict_new(
+			int capacity, 
+			entry_key_fn* entry_key,
+			key_hash_fn* hash,
+			key_equiv_fn* equiv)
+//@requires capacity > 0;
+//@requires entry_key != NULL && hash != NULL && equiv != NULL;
+//@ensures is_hdict(\result);
+//@ensures \result->capacity == capacity;
+{
+	hdict* H = alloc(hdict);
+	H->size = 0;
+	H->capacity = capacity;
+	H->table = alloc_array(chain*, capacity);
+	H->key = entry_key;
+	H->hash = hash;
+	H->equiv = equiv;
+	return H;
+}
+
+entry hdict_lookup(hdict* H, key k)
+//@requires is_hdict(H);
+//@requires k != NULL;
+/*@ensures \result == NULL
+		|| _key_equiv(H, _entry_key(H, \result), k); @*/
+{
+	int i = key_to_index(H, k);
+	for (chain* p = H->table[i]; p != NULL; p = p->next) {
+		if (_key_equiv(H, k, _entry_key(H, p->data))) {
+			return p->data;
+		}
+	}
+	return NULL;
+}
+
+void hdict_insert(hdict* H, entry e)
+//@requires is_hdict(H);
+//@requires e != NULL;
+//@ensures hdict_lookup(H, _entry_key(H, e)) == e;
+{
+	int i = key_to_index(H, _entry_key(H, e));
+	for (chain* p = H->table[i]; p != NULL; p = p->next) {
+		if (_key_equiv(H, _entry_key(H, e), _entry_key(H, p->data))) {
+			p->data = e;
+			return;
+		}
+	}
+
+	chain* p = alloc(chain);
+	p->data = e;
+	p->next = H->table[i];
+	H->table[i] = p;
+	(H->size)++;
+}
+
+/*************************/
+/*** Library interface ***/
+/*************************/
+
+typedef hdict* hdict_t;
+
+hdict_t hdict_new(
+			int capacity, 
+			entry_key_fn* entry_key,
+			key_hash_fn* hash,
+			key_equiv_fn* equiv)
+/*@requires capacity > 0; @*/
+/*@ensures \result != NULL; @*/;
+
+entry hdict_lookup(hdict_t H, key k)
+/*@requires H != NULL && k != NULL; @*/;
+
+void hdict_insert(hdict_t H, entry e)
+/*@requires H != NULL && e != NULL; @*/;
