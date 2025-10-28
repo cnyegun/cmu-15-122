@@ -1,0 +1,211 @@
+#use <conio>
+
+/*************************/
+/* Client-side interface */
+/*************************/
+
+typedef struct student_header student;
+struct student_header {
+	int id; // key;
+	string name; 
+};
+
+typedef int key;
+typedef student* entry;
+
+key entry_key(entry e)
+/*@requires e != NULL; @*/
+{
+	return e->id;
+}
+
+int key_compare(key k1, key k2) {
+	if (k1 > k2) {
+		return 1;
+	} else if (k1 < k2) {
+		return -1;
+	} else {
+		return 0;
+	}
+}
+
+/**************************/
+/* Library implementation */
+/**************************/
+
+typedef struct tree_node tree;
+struct tree_node {
+	entry data;
+	tree* left;
+	tree* right;
+};
+
+bool is_tree(tree* root) {
+	if (root == NULL) return true;
+	return root->data != NULL 
+		&& is_tree(root->left) 
+		&& is_tree(root->right);
+}
+
+bool is_ordered(tree* T, entry lo, entry hi)
+//@requires is_tree(T);
+{
+	if (T == NULL) return true;
+	key k = entry_key(T->data);
+	return T->data != NULL
+		&& (lo == NULL || key_compare(k, entry_key(lo)) > 0)
+		&& (hi == NULL || key_compare(k, entry_key(hi)) < 0)
+		&& is_ordered(T->left, lo, T->data)
+		&& is_ordered(T->right, T->data, hi);
+}
+
+bool is_bst(tree* T) {
+	return is_tree(T) && is_ordered(T, NULL, NULL);
+}
+
+entry bst_lookup(tree* T, key k) 
+//@requires is_tree(T);
+/*@ensures \result == NULL
+		|| key_compare(entry_key(\result), k) == 0; @*/
+{
+	if (T == NULL) return NULL;
+	int cmp = key_compare(k, entry_key(T->data));
+	if (cmp == 0) {
+		return T->data;
+	} else if (cmp < 0) {
+		return bst_lookup(T->left, k);
+	}
+	return bst_lookup(T->right, k); 
+}
+
+tree* bst_insert(tree* T, entry e)
+//@requires is_bst(T) && e != NULL;
+//@ensures is_bst(\result) && \result != NULL;
+//@ensures bst_lookup(\result, entry_key(e)) == e;
+{
+	if (T == NULL) {
+		tree* R = alloc(tree);
+		R->data = e;
+		R->left = NULL;
+		R->right = NULL;
+		return R;
+	}
+
+	tree* parent = NULL;
+	tree* idx = T;
+	int cmp = 0;
+
+	while (idx != NULL) {
+		cmp = key_compare(entry_key(e), entry_key(idx->data));
+		if (cmp == 0) {
+			idx->data = e;
+			return T;
+		}
+
+		parent = idx;
+		idx = cmp > 0 ? idx->right : idx->left;
+	}
+
+	tree* R = alloc(tree);
+	R->data = e;
+	R->left = NULL;
+	R->right = NULL;
+
+	if (cmp < 0) {
+		parent->left = R;
+	} else {
+		parent->right = R;
+	}
+	return T;
+}
+
+typedef struct dict_header dict;
+struct dict_header {
+	tree* root;
+};
+
+
+bool is_dict(dict* D) {
+	return D != NULL && is_bst(D->root);
+}
+
+dict* dict_new()
+//@ensures \result != NULL;
+{
+	dict* D = alloc(dict);
+	D->root = NULL;
+	return D;
+}
+
+entry dict_lookup(dict* D, key k)
+//@requires is_dict(D);
+/*@ensures \result == NULL 
+		|| key_compare(entry_key(\result), k) == 0; @*/
+{
+	return bst_lookup(D->root, k);
+}
+
+void dict_insert(dict* D, entry e)
+//@requires is_dict(D) && e != NULL;
+//@ensures is_dict(D);
+//@ensures dict_lookup(D, entry_key(e)) != NULL;
+{
+	D->root = bst_insert(D->root, e);
+}
+
+/*********************/
+/* Library interface */
+/*********************/
+
+typedef dict* dict_t;
+
+dict_t dict_new()
+/*@ensures \result != NULL; @*/ ;
+entry dict_lookup(dict_t D, key k)
+/*@requires D != NULL; @*/
+/*@ensures \result == NULL
+|| key_compare(entry_key(\result), k) == 0; @*/ ;
+void dict_insert(dict_t D, entry e)
+/*@requires D != NULL && e != NULL; @*/
+/*@ensures dict_lookup(D, entry_key(e)) != NULL; @*/ ;
+
+/*********************/
+/*     User code     */
+/*********************/
+
+entry new_student(int id, string name) {
+	entry s = alloc(student);
+	s->id = id;
+	s->name = name;
+	return s;
+}
+
+int main() {
+	dict_t students = dict_new();
+
+    printf("Inserting students...\n");
+    dict_insert(students, new_student(1001, "Alice"));
+    dict_insert(students, new_student(1002, "Bob"));
+    dict_insert(students, new_student(1003, "Charlie"));
+
+
+    printf("\nLooking up students:\n");
+	int[] ids = alloc_array(int, 3);
+	ids[0] = 1001;
+	ids[1] = 1003;
+	ids[2] = 9999;
+    for (int i = 0; i < 3; i++) {
+        entry e = dict_lookup(students, ids[i]);
+        if (e != NULL)
+            printf("  Found: ID=%d, Name=%s\n", e->id, e->name);
+        else
+            printf("  Student with ID=%d not found.\n", ids[i]);
+    }
+
+    printf("\nUpdating Bob's name...\n");
+    dict_insert(students, new_student(1002, "Bobby"));
+    entry e = dict_lookup(students, 1002);
+    printf("  Updated: ID=%d, Name=%s\n", e->id, e->name);
+
+	return 0;
+}
