@@ -1,0 +1,22 @@
+
+
+int tree_height(tree* T) {
+	if (T == NULL) return 0;
+	return 1 + max(tree_height(T->left), tree_height(T->right));
+}
+
+int tree_balance_factor(tree* T) {
+	if (T == NULL) return 0;
+	return tree_height(T->left) - tree_height(T->right);
+}
+
+// avl invariant: no balance factor should be greater than 1 or less than - 1
+// -1 <= bf <= 1
+
+tree* tree_left_rotate(tree* T)
+//@requires is_bst(T);
+//@requires tree_balance_factor(T) < -1;
+//@ensures is_balanced(T);
+{
+	tree* A = 
+}
