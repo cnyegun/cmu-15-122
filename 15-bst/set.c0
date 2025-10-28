@@ -1,0 +1,232 @@
+#use <conio>
+/* Client-side interface */
+typedef int* elem;
+
+int elem_compare(elem e1, elem e2)
+/*@ensures -1 <= \result && \result <= 1; @*/
+{
+	if (*e1 == *e2) return 0;
+	else if (*e1 > *e2) return 1;
+	return -1;
+}
+/* Library implementation */
+typedef struct tree_header tree;
+struct tree_header {
+	elem data;
+	tree* left;
+	tree* right;
+};
+
+bool is_tree(tree* T) {
+	return T == NULL
+		|| (T->data != NULL 
+			&& is_tree(T->left)
+			&& is_tree(T->right));
+}
+
+bool is_ordered(tree* T, elem lo, elem hi) 
+//@requires is_tree(T);
+{
+	if (T == NULL) return true;
+	return (lo == NULL || elem_compare(T->data, lo) > 0)
+		&& (hi == NULL || elem_compare(T->data, hi) < 0)
+		&& is_ordered(T->left, lo, T->data)
+		&& is_ordered(T->right, T->data, hi);
+}
+
+bool is_bst(tree* T) {
+	return is_tree(T) && is_ordered(T, NULL, NULL);
+}
+
+elem bst_lookup(tree* T, elem e)
+//@requires is_bst(T);
+/*@ensures \result == NULL
+		|| elem_compare(\result, e) == 0; @*/
+{
+	while (T != NULL) {
+		int cmp = elem_compare(e, T->data);
+		if (cmp == 0) return e;
+		else if (cmp > 0) T = T->right;
+		else {
+			T = T->left;
+		}
+	}
+	return NULL;
+}
+
+tree* bst_insert(tree* T, elem e)
+//@requires is_bst(T) && e != NULL;
+//@ensures is_bst(T);
+//@ensures bst_lookup(\result, e) == e;
+{
+	tree* parent = NULL;
+	tree* Q = T;
+
+	while (Q != NULL) {
+		int cmp = elem_compare(e, Q->data);
+		if (cmp == 0) {
+			Q->data = e;
+			return T;
+		}
+		else if (cmp > 0) {
+			parent = Q;
+			Q = Q->right;
+		} 
+		else {
+			parent = Q;
+			Q = Q->left;
+		}
+	}
+
+	tree* R = alloc(tree);
+	R->data = e;
+	R->left = NULL;
+	R->right = NULL;
+
+	if (parent == NULL) return R;
+
+	int cmp = elem_compare(e, parent->data);
+	if (cmp > 0) {
+		parent->right = R;
+	}
+	else {
+		parent->left = R;
+	}
+	return T;
+
+}
+
+typedef struct set_header set;
+struct set_header {
+	tree* root;
+};
+
+elem make_elem(int x) {
+	int* r = alloc(int);
+	*r = x;
+	return r;
+}
+
+tree* make_node(elem e) {
+    tree* T = alloc(tree);
+    T->data = e;
+    T->left = NULL;
+    T->right = NULL;
+    return T;
+}
+
+void print_inorder(tree* T) {
+    if (T == NULL) return;
+    print_inorder(T->left);
+    printf("%d ", *T->data);
+    print_inorder(T->right);
+}
+
+
+void test_insert_basic() {
+    printf("Test 1: Insert into empty tree\n");
+    tree* T = NULL;
+    elem e = make_elem(5);
+    T = bst_insert(T, e);
+
+    assert(T != NULL);
+    assert(*(T->data) == 5);
+    assert(is_bst(T));
+    elem lookup = bst_lookup(T, e);
+    assert(*(lookup) == 5);
+
+    printf("✅ Passed Test 1\n\n");
+}
+
+void test_insert_left_right() {
+    printf("Test 2: Insert left and right children\n");
+    tree* T = NULL;
+    T = bst_insert(T, make_elem(5));
+    T = bst_insert(T, make_elem(3));
+    T = bst_insert(T, make_elem(7));
+
+    assert(is_bst(T));
+    elem l = make_elem(3);
+    elem r = make_elem(7);
+    elem m = make_elem(5);
+    assert(*(bst_lookup(T, l)) == 3);
+    assert(*(bst_lookup(T, r)) == 7);
+    assert(*(bst_lookup(T, m)) == 5);
+
+    printf("✅ Passed Test 2\n\n");
+}
+
+void test_insert_duplicate() {
+    printf("Test 3: Insert duplicate (replacement)\n");
+    tree* T = NULL;
+    elem e1 = make_elem(5);
+    T = bst_insert(T, e1);
+    elem e2 = make_elem(5);
+    T = bst_insert(T, e2); // replaces existing
+
+    assert(is_bst(T));
+    elem found = bst_lookup(T, e2);
+    assert(*(found) == 5);
+
+    printf("✅ Passed Test 3\n\n");
+}
+
+void test_insert_chain() {
+    printf("Test 4: Insert ascending chain\n");
+    tree* T = NULL;
+    int i = 1;
+    while (i <= 5) {
+        elem e = make_elem(i);
+        T = bst_insert(T, e);
+        i++;
+    }
+
+    assert(is_bst(T));
+    elem e5 = make_elem(5);
+    elem found = bst_lookup(T, e5);
+    assert(*(found) == 5);
+
+    printf("✅ Passed Test 4\n\n");
+}
+
+void test_random_order() {
+    printf("Test 5: Insert random order\n");
+
+    int n = 7;
+    int[] vals = alloc_array(int, n);
+    vals[0] = 4; vals[1] = 2; vals[2] = 6;
+    vals[3] = 1; vals[4] = 3; vals[5] = 5; vals[6] = 7;
+
+    tree* T = NULL;
+    int i = 0;
+    while (i < n) {
+        elem e = make_elem(vals[i]);
+        T = bst_insert(T, e);
+        assert(is_bst(T));
+        i++;
+    }
+
+    // Verify all lookups
+    i = 0;
+    while (i < n) {
+        elem e = make_elem(vals[i]);
+        elem found = bst_lookup(T, e);
+        assert(*(found) == vals[i]);
+        i++;
+    }
+
+    printf("✅ Passed Test 5\n\n");
+}
+
+// ---------- MAIN ----------
+
+int main() {
+    test_insert_basic();
+    test_insert_left_right();
+    test_insert_duplicate();
+    test_insert_chain();
+    test_random_order();
+    printf("🎉 All bst_insert tests passed!\n");
+    return 0;
+}
+
