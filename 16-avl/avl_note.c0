@@ -3,16 +3,66 @@
 /* BSTs are good only if they're balanced */
 /* Let's balance it */
 
+struct person {
+	int id; //key
+	string name;
+}
+
+typedef struct person* entry;
+
 typedef struct tree_node tree;
 struct tree_node {
-	int data;
+	entry data;
+	int height;
 	tree* left;
 	tree* right;
 };
 
+bool is_tree(tree* root) {
+	if (root == NULL) return true;
+	return root->data != NULL 
+		&& is_tree(root->left) 
+		&& is_tree(root->right);
+}
+
+int height(tree* T) {
+	return T == NULL ? 0 : T->height;
+}
+
+bool is_specified_height(tree* T) {
+	if (T == NULL) return true;
+	return is_specified_height(T->left)
+			&& is_specified_height(T->right)
+			&& T->height == tree_height(T);
+}
+
+bool is_balanced(tree* T) {
+	if (T == NULL) return true;
+	return abs(height(T->left) - height(T->right)) <= 1
+			&& is_balanced(T->left) && is_balanced(T->right);
+}
+
+bool is_ordered(tree* T, entry lo, entry hi)
+//@requires is_tree(T);
+{
+	if (T == NULL) return true;
+	key k = entry_key(T->data);
+	return T->data != NULL
+		&& (lo == NULL || key_compare(k, entry_key(lo)) > 0)
+		&& (hi == NULL || key_compare(k, entry_key(hi)) < 0)
+		&& is_ordered(T->left, lo, T->data)
+		&& is_ordered(T->right, T->data, hi);
+}
+
+bool is_avl(tree* T) {
+	return is_tree(T) && is_ordered(T, NULL, NULL)
+			&& is_specified_height(T)
+			&& is_balanced(T);
+}
+
 /* How? */
 /* Rebalancing during insert or search operations */
-/* Don't violate the invariant */
+/* Don't violate the ordering invariant */
 
 int tree_height(tree* T)
 {
@@ -20,9 +70,128 @@ int tree_height(tree* T)
 	return 1 + max(tree_height(T->left), tree_height(T->right));
 }
 
-/* Insert a node to a tree */
+void fix_height(tree* T) 
+//@requires T != NULL;
+//@requires is_specified_height(T->left);
+//@requires is_specified_height(T->right);
+{
+	int hl = height(T->left);
+	int hr = height(T->right);
+	T->height = hl - hr;
+	return;
+}
+
+/* What is height invariant? */
+/* > at any node in the tree, 
+		height of left and right branches differ at most 1 */
+
+int balance_factor(tree* T)
+//@requires T != NULL;
+{
+	return tree_height(T->left) - tree_height(T->left);
+}
+
+tree* rotate_left(tree* T)
+//@requires T != NULL &&  T->right != NULL;
+//@requires is_specified_height(T->left);
+//@requires is_specified_height(T->right);
+//@ensures is_specified_height(\result);
+{
+	tree* R = T->right;
+	T->right = R->left;
+	R->left = T;
+	fix_height(T);
+	fix_height(R);
+	return R;
+}
+
+tree* rotate_right(tree* T)
+//@requires T != NULL && T->left != NULL;
+//@requires is_specified_height(T->left);
+//@requires is_specified_height(T->right);
+//@ensures is_specified_height(\result);
+{
+	tree* L = T->left;
+	T->left = L->right;
+	L->right = T;
+	fix_height(T);
+	fix_height(R);
+	return L;
+}
+
+tree* leaf(entry e)
+//@requires e != NULL;
+//@ensures is_avl(\result) && \result != NULL;
+{
+	tree* T = alloc(tree);
+	T->data = e;
+	T->height = 1;
+	return T;
+}
+
+tree* avl_insert(tree* T, entry e) 
+//@requires is_avl(T) && e != NULL;
+//@ensures is_avl(\result) && \result != NULL;
+//@ensures avl_lookup(\result, entry_key(e)) == e;
+{
+	if (T == NULL) return leaf(e);
+
+	int cmp = key_comapre(entry_key(e), entry_key(T->data));
+	if (cmp == 0) T->data = e;
+	else if (cmp < 0) 
+	{
+		avl_insert(T->left, e);
+		T = rebalance_left(T);
+	}
+	else {
+		avl_insert(T->right, e);
+		T = rebalance_right(T);
+	}
+	return T;
+}
 
 int main() {
-	printf("Height of the tree: %d\n", tree_height(T));
+	/* balanced tree */
+	tree* t = alloc(tree);
+	t->value = 1;
+
+	t->left = alloc(tree);
+	t->left->value = 2;
+
+	t->right = alloc(tree);
+	t->right->value = 3;
+
+	t->left->left = NULL;
+	t->left->right = NULL;
+
+	t->right->left = NULL;
+	t->right->right = NULL;
+	
+	printf("Left branch height: %d\nRight brand height: %d\n", 
+				  tree_height(t->left), 
+					tree_height(t->right));
+	printf("Balance: %d\n", balance(t));
+
+	tree* u = alloc(tree);
+	u->value = 1;
+
+	u->left = alloc(tree);
+	u->left->value = 2;
+
+	u->right = NULL;
+
+	u->left->left = alloc(tree);
+	u->left->left->value = 3;
+
+	u->left->right = NULL;
+
+	u->left->left->left = NULL;
+	u->left->left->right = NULL;
+
+	printf("Left branch height: %d\nRight brand height: %d\n", 
+				  tree_height(u->left), 
+					tree_height(u->right));
+	printf("Balance: %d\n", balance(u));
+
 	return 0;
 }
