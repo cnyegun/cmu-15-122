@@ -1,0 +1,165 @@
+/* =============================== */
+/*   Tests for your dict + BST     */
+/* =============================== */
+
+void test_lookup_found() {
+    dict* D = dict_new();
+    entry e1 = make_entry("alpha", 1);
+    entry e2 = make_entry("beta", 2);
+    entry e3 = make_entry("gamma", 3);
+
+    dict_insert(D, e1);
+    dict_insert(D, e2);
+    dict_insert(D, e3);
+
+    assert(dict_lookup(D, "alpha") == e1);
+    assert(dict_lookup(D, "beta") == e2);
+    assert(dict_lookup(D, "gamma") == e3);
+
+    printf("test_lookup_found passed\n");
+}
+
+void test_lookup_missing() {
+    dict* D = dict_new();
+    dict_insert(D, make_entry("apple", 10));
+    dict_insert(D, make_entry("banana", 20));
+
+    assert(dict_lookup(D, "cherry") == NULL);
+
+    printf("test_lookup_missing passed\n");
+}
+
+void test_duplicate_overwrite() {
+    dict* D = dict_new();
+
+    entry e1 = make_entry("key", 5);
+    entry e2 = make_entry("key", 99);  // same key, new entry
+
+    dict_insert(D, e1);
+    dict_insert(D, e2);
+
+    entry res = dict_lookup(D, "key");
+
+    assert(res == e2);
+    assert(res->count == 99);
+
+    printf("test_duplicate_overwrite passed\n");
+}
+
+/* =============================== */
+/*  Auxiliary: in-order traversal   */
+/* =============================== */
+
+void inorder(tree* T) {
+    if (T == NULL) return;
+    inorder(T->left);
+    printf("%s ", entry_key(T->data));
+    inorder(T->right);
+}
+
+void test_inorder_sorted() {
+    dict* D = dict_new();
+
+    dict_insert(D, make_entry("mango", 1));
+    dict_insert(D, make_entry("apple", 1));
+    dict_insert(D, make_entry("peach", 1));
+    dict_insert(D, make_entry("banana", 1));
+
+    printf("In-order traversal should be sorted:\n");
+    inorder(D->root);
+    printf("\n(verify manually)\n");
+
+    printf("test_inorder_sorted printed output\n");
+}
+
+/* =============================== */
+/*     Stress test with arrays     */
+/* =============================== */
+
+void test_many_inserts() {
+    dict* D = dict_new();
+
+    /* allocate an array of 10 strings */
+    int n = 10;
+    string[] words = alloc_array(string, n);
+
+    words[0] = "zebra";
+    words[1] = "yak";
+    words[2] = "xerox";
+    words[3] = "wolf";
+    words[4] = "viper";
+    words[5] = "urchin";
+    words[6] = "tiger";
+    words[7] = "snake";
+    words[8] = "rhino";
+    words[9] = "quail";
+
+    /* Insert all words */
+    for (int i = 0; i < n; i++) {
+        dict_insert(D, make_entry(words[i], i));
+        assert(is_bst(D->root));  // ensure BST is preserved
+    }
+
+    /* Check all lookups */
+    for (int i = 0; i < n; i++) {
+        entry e = dict_lookup(D, words[i]);
+        assert(e != NULL);
+        assert(e->count == i);
+    }
+
+    printf("test_many_inserts passed\n");
+}
+
+void test_dict_size() {
+    dict* D = dict_new();
+
+    /* empty dictionary */
+    assert(dict_size(D) == 0);
+
+    /* insert three distinct keys */
+    dict_insert(D, make_entry("apple", 1));
+    assert(dict_size(D) == 1);
+
+    dict_insert(D, make_entry("banana", 2));
+    assert(dict_size(D) == 2);
+
+    dict_insert(D, make_entry("cherry", 3));
+    assert(dict_size(D) == 3);
+
+    /* inserting duplicate key -> size shouldn't change */
+    dict_insert(D, make_entry("banana", 99));
+    assert(dict_size(D) == 2 + 1);  // still 3
+
+    /* stress insert with an array (C0 style) */
+    int n = 5;
+    string[] more = alloc_array(string, n);
+    more[0] = "dog";
+    more[1] = "elephant";
+    more[2] = "frog";
+    more[3] = "goat";
+    more[4] = "hippo";
+
+    for (int i = 0; i < n; i++) {
+        dict_insert(D, make_entry(more[i], i));
+    }
+
+    assert(dict_size(D) == 3 + n);
+
+    printf("test_dict_size passed\n");
+}
+
+/* =============================== */
+/*                MAIN             */
+/* =============================== */
+
+int main() {
+    test_lookup_found();
+    test_lookup_missing();
+    test_duplicate_overwrite();
+    test_inorder_sorted();
+    test_many_inserts();
+		test_dict_size();
+    printf("All tests passed.\n");
+    return 0;
+}
+

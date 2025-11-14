@@ -1,0 +1,28 @@
+#use <conio>
+#use <util>
+/* BSTs are good only if they're balanced */
+/* Let's balance it */
+
+typedef struct tree_node tree;
+struct tree_node {
+	int data;
+	tree* left;
+	tree* right;
+};
+
+/* How? */
+/* Rebalancing during insert or search operations */
+/* Don't violate the invariant */
+
+int tree_height(tree* T)
+{
+	if (T == NULL) return 0;
+	return 1 + max(tree_height(T->left), tree_height(T->right));
+}
+
+/* Insert a node to a tree */
+
+int main() {
+	printf("Height of the tree: %d\n", tree_height(T));
+	return 0;
+}

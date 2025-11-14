@@ -1,0 +1,44 @@
+#use <string>
+#use <conio>
+/* ************************** */
+/* Client-side implementation */
+/* ************************** */
+
+typedef string key;
+typedef struct entry_header* entry;
+
+struct entry_header 
+{
+	string word; // key
+	int count;
+};
+
+key entry_key(entry e)
+/*@requires e != NULL; @*/
+{
+	return e->word;
+}
+
+int key_compare(key k1, key k2) 
+{
+	return string_compare(k1, k2);
+}
+
+entry make_entry(string word, int count)
+//@ensures \result != NULL;
+{
+	entry e = alloc(struct entry_header);
+	e->word = word;
+	e->count = count;
+	return e;
+}
+
+void print_entry(entry e) 
+{
+	if (e == NULL) {
+		printf("NULL\n");
+	}
+	else {
+		printf("Word: %s\nCount: %d\n", e->word, e->count);
+	}
+}
