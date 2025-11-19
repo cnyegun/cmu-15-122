@@ -183,29 +183,29 @@ entry new_student(int id, string name) {
 int main() {
 	dict_t students = dict_new();
 
-    printf("Inserting students...\n");
-    dict_insert(students, new_student(1001, "Alice"));
-    dict_insert(students, new_student(1002, "Bob"));
-    dict_insert(students, new_student(1003, "Charlie"));
+	printf("Inserting students...\n");
+	dict_insert(students, new_student(1001, "Alice"));
+	dict_insert(students, new_student(1002, "Bob"));
+	dict_insert(students, new_student(1003, "Charlie"));
 
 
-    printf("\nLooking up students:\n");
+	printf("\nLooking up students:\n");
 	int[] ids = alloc_array(int, 3);
 	ids[0] = 1001;
 	ids[1] = 1003;
 	ids[2] = 9999;
-    for (int i = 0; i < 3; i++) {
-        entry e = dict_lookup(students, ids[i]);
-        if (e != NULL)
-            printf("  Found: ID=%d, Name=%s\n", e->id, e->name);
-        else
-            printf("  Student with ID=%d not found.\n", ids[i]);
-    }
+	for (int i = 0; i < 3; i++) {
+			entry e = dict_lookup(students, ids[i]);
+			if (e != NULL)
+					printf("  Found: ID=%d, Name=%s\n", e->id, e->name);
+			else
+					printf("  Student with ID=%d not found.\n", ids[i]);
+	}
 
-    printf("\nUpdating Bob's name...\n");
-    dict_insert(students, new_student(1002, "Bobby"));
-    entry e = dict_lookup(students, 1002);
-    printf("  Updated: ID=%d, Name=%s\n", e->id, e->name);
+	printf("\nUpdating Bob's name...\n");
+	dict_insert(students, new_student(1002, "Bobby"));
+	entry e = dict_lookup(students, 1002);
+	printf("  Updated: ID=%d, Name=%s\n", e->id, e->name);
 
 	return 0;
 }
