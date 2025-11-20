@@ -71,7 +71,7 @@ void uba_print(uba* A) {
 	printf("[");
 	for (int i = 0; i < A->size; i++) {
 		printf("%s", A->data[i]);
-		if (i+1 != A->size) printf(", ");
+		if (i + 1 != A->size) printf(", ");
 	}
 	printf("]\n");
 }
