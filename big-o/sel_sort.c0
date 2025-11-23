@@ -6,6 +6,7 @@ int find_min(int[] A, int lo, int hi)
 //@ensures lo <= \result && \result < hi && le_seg(A[\result], A, lo, hi);
 {
     int min_index = lo;
+	int min_index = lo;
     for (int i = lo + 1; i < hi; i++)
     //@loop_invariant lo < i && i <= hi;
     //@loop_invariant le_seg(A[min_index], A, lo, i);
