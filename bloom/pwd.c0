@@ -1,0 +1,148 @@
+/**************************************************************************/
+/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/* Do not post this file or any derivative on a public site or repository */
+/**************************************************************************/
+/*
+ * Password checker (application of Bloom filters)
+ *
+ * 15-122 Principles of Imperative Computation
+ */
+
+
+#use <string>
+#use <file>
+
+/************************************************************************/
+/************************* BEGIN IMPLEMENTATION *************************/
+
+struct pwd_header {
+  bloom_t iffy;    // != NULL
+  string bad;      // string_length(bad) > 0;
+  int checks;      // == truepos + trueneg + falsepos
+  int truepos;     // 0 <= truepos  <= checks
+  int trueneg;     // 0 <= trueneg  <= checks
+  int falsepos;    // 0 <= falsepos <= checks
+};
+typedef struct pwd_header pwd;
+
+// Forward declaration: do not modify!
+bool is_pwd(pwd* B);
+
+void pwd_stats(pwd* B)
+//@requires is_pwd(B);
+{
+  printf("%d checks were performed.  Of these:\n", B->checks);
+  printf("- %d were true positives", B->truepos);
+  printf(" (the password was indeed compromised)\n");
+  printf("- %d were false positives", B->falsepos);
+  printf(" (the password appeared compromised but was actually fine)\n");
+  printf("- %d were true negatives", B->trueneg);
+  printf(" (the password was uncompromised)\n");
+}
+
+bool pwd_thoroughcheck(pwd* B, string s)
+//@requires is_pwd(B) && string_length(s) > 0;
+{
+  file_t f = file_read(B->bad);
+  if (f == NULL) {
+    printf("File %s ", B->bad); error("does not exist.\n");
+  }
+
+  while (!file_eof(f)) {
+    if (string_equal(s, file_readline(f))) {
+      file_close(f);
+      return true;
+    }
+  }
+  return false;
+}
+
+
+/******************* MAKE YOUR EDITS BETWEEN HERE ... *******************/
+
+bool is_pwd(pwd* B) {
+  /* WRITE ME */
+  return NULL;
+}
+
+/* This function is fine except for two edits you need to make */
+pwd* pwd_new(int capacity, string badpwdfile)
+//@requires capacity > 0;
+//@ensures is_pwd(\result);
+{
+  file_t f = file_read(badpwdfile);
+  if (f == NULL) {
+    printf("File %s ", badpwdfile); error("does not exist.\n");
+  }
+
+  pwd* B = alloc(pwd);
+  B->iffy = NULL;  /* <-------------------------------------- UPDATE ME */
+  B->bad = badpwdfile;
+
+  while (!file_eof(f)) {
+    string s = file_readline(f);
+    if (!string_equal(s, ""))
+                   /* <-------------------------------------- UPDATE ME */
+  }
+  file_close(f);
+
+  B->checks = 0;
+  B->truepos = 0;
+  B->trueneg = 0;
+  B->falsepos = 0;
+  return B;
+}
+
+bool pwd_quickcheck(pwd* B, string s)
+//@requires true;  /* UPDATE ME */
+//@ensures true;   /* UPDATE ME */
+{
+  /* WRITE ME */
+  return true;  /* bogus */
+}
+
+int pwd_check(pwd* B, string s)
+//@requires true;  /* UPDATE ME */
+//@ensures true;   /* UPDATE ME */
+{
+  /* WRITE ME */
+  return -1;  /* bogus */
+}
+
+/***************************** ... AND HERE *****************************/
+
+typedef pwd* pwd_t;
+
+/************************** END IMPLEMENTATION **************************/
+/************************************************************************/
+
+
+/************************************************************************/
+/******************************* Interface ******************************/
+
+// typedef ______* pwd_t;
+
+// create a pwd database from file pwdfile
+pwd_t pwd_new(int capacity, string pwdfile)
+/*@requires capacity > 0;   @*/
+/*@ensures \result != NULL; @*/ ;
+
+// return whether s IS in B's bad passwords file
+bool pwd_thoroughcheck(pwd_t B, string s)
+/*@requires B != NULL && string_length(s) > 0; @*/ ;
+
+// return whether s MIGHT BE in B's bad passwords file
+bool pwd_quickcheck(pwd_t B, string s)
+/*@requires B != NULL && string_length(s) > 0; @*/ ;
+
+// Returns 0 if s is compromised
+//         1 if the thorough check was necessary to show s is uncompromised
+//         2 if the quick check was sufficient to show s is uncompromised
+// Updates the stats
+int pwd_check(pwd_t B, string s)
+/*@requires B != NULL && string_length(s) > 0; @*/
+/*@ensures 0 <= \result && \result <= 2;       @*/ ;
+
+// prints statistics
+void pwd_stats(pwd_t B)
+/*@requires B != NULL; @*/ ;
