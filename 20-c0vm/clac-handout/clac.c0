@@ -19,6 +19,7 @@
  * implementation of the state_t type. You will need to modify
  * this type when you do task 3. */
 typedef bool *state_t; // MODIFY ME
+typedef bool *state_t;
 state_t init_state()
 //@ensures \result != NULL;
 {

@@ -226,4 +226,3 @@ int main() {
     print_entry(avl_lookup(root, 8));
     printf("All tests passed!\n");
     return 0;
-}
