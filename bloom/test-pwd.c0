@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/*							COPYRIGHT Carnegie Mellon University 2023									*/
 /* Do not post this file or any derivative on a public site or repository */
 /**************************************************************************/
 #use <string>
@@ -8,11 +8,11 @@
 // You are welcome to define helper functions for your tests
 
 int main() {
-  // Create a password database and check a few passwords against it.
-  // Use pwd_stats to make sure the stats are updated correctly.
+	// Create a password database and check a few passwords against it.
+	// Use pwd_stats to make sure the stats are updated correctly.
 
 
 
-  printf("All correctness tests passed!\n\n");
-  return 0;
+	printf("All correctness tests passed!\n\n");
+	return 0;
 }

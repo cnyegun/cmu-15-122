@@ -1,16 +1,16 @@
 /**************************************************************************/
-/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/*							COPYRIGHT Carnegie Mellon University 2023									*/
 /* Do not post this file or any derivative on a public site or repository */
 /**************************************************************************/
 #use <conio>
 
 int main() {
-  // Create a few arrays of integers
+	// Create a few arrays of integers
 
-  // Using them, test the functions test get_bit and set_bit
+	// Using them, test the functions test get_bit and set_bit
 
 
 
-  printf("All tests passed!\n");
-  return 0;
+	printf("All tests passed!\n");
+	return 0;
 }

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*              COPYRIGHT Carnegie Mellon University 2023                 */
+/*							COPYRIGHT Carnegie Mellon University 2023									*/
 /* Do not post this file or any derivative on a public site or repository */
 /**************************************************************************/
 #use <rand>
@@ -10,21 +10,21 @@
 // You are welcome to define helper functions for your tests
 
 int main() {
-  // Create a few bloom filters to test CORRECTNESS: here, focus on raising
-  //      assertion errors on any incorrect implementation of the interface
+	// Create a few bloom filters to test CORRECTNESS: here, focus on raising
+	//			assertion errors on any incorrect implementation of the interface
 
 
 
 
-  printf("All correctness tests passed!\n\n");
+	printf("All correctness tests passed!\n\n");
 
-  // Create a few boom filters to test PERFORMANCE: this part should
-  //     compute and return a performance score between 0 and 100 that
-  //     assesses how bad or good a bloom filter implementation is
-
-
+	// Create a few boom filters to test PERFORMANCE: this part should
+	//		 compute and return a performance score between 0 and 100 that
+	//		 assesses how bad or good a bloom filter implementation is
 
 
-  printf("Returning the performance score.\n");
-  return -1;  // MODIFY ME
+
+
+	printf("Returning the performance score.\n");
+	return -1;	// MODIFY ME
 }
