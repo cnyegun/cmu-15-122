@@ -1,12 +1,85 @@
 #use <conio>
 #use <util>
 
+// ***************** 
+// 	 HASH FUNCTION
+// *****************
+
+int hash_mul31(string s)
+{
+  int result = 0;
+  int len = string_length(s);
+
+  for(int i = 0; i < len; i++)
+    //@loop_invariant 0 <= i && i <= len;
+    // loop_invariant result equals to the hash_mul31 of string_sub(s, 0, i);
+    {
+      result = result * 31 + char_ord(string_charat(s, i));
+    }
+  return result;
+}
+
+// ***************** 
+// 	 BLOOM FILTER 
+// *****************
+
 typedef struct bloom_filter bloom;
 struct bloom_filter {
 	int capacity;   // capacity < int_max()/4
-	bool[] data;	// capacity == \length(data);
+	bool[] data;		// capacity == \length(data);
 };
 
-bool is_bloom(bloom* B)
-/*@requires B != NULL; @*/
+bool is_bloom(bloom* B) {
+	return B != NULL
+		&& B->capacity > 0
+		&& B->capacity < (int_max() / 4);
+}
 
+bloom* bloom_new(int capacity) 
+//@requires 0 < capacity && capacity < int_max()/4;
+//@ensures is_bloom(\result);
+{
+	bloom* B = alloc(bloom);
+	B->capacity = capacity;
+	B->data = alloc_array(bool, capacity);
+	return B;
+}
+
+bool bloom_contains(bloom* B, string x)
+//@requires is_bloom(B);
+{
+	int len = B->capacity;
+	int hash_value = abs(hash_mul31(x));
+	int index = hash_value % len;
+	return B->data[index];
+}
+
+void bloom_add(bloom* B, string x)
+//@requires is_bloom(B);
+//@ensures bloom_contains(B, x);
+{
+	int len = B->capacity;
+	int hash_value = abs(hash_mul31(x));
+	int index = hash_value % len;
+	B->data[index] = true;
+	return;
+}
+
+typedef bloom* bloom_t;
+
+// ***************** 
+// 	    TESTING
+// *****************
+
+/*
+int main() {
+	print("Running some tests... \n");
+
+	bloom_t B1 = bloom_new(5);
+
+	//@assert is_bloom(B1);
+
+	print("All tests passed!\n");
+	return 0;
+}
+*/

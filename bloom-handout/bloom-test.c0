@@ -13,36 +13,31 @@ int main() {
   // Create a few bloom filters to test CORRECTNESS: here, focus on raising
   //      assertion errors on any incorrect implementation of the interface
   bloom_t B1 = bloom_new(500);
-
   bloom_add(B1, "hello");
   bloom_add(B1, "jax");
   bloom_add(B1, "kayn");
   //@assert bloom_contains(B1, "hello") == true;
   //@assert bloom_contains(B1, "jax") == true;
   //@assert bloom_contains(B1, "kayn") == true;
-  
   printf("All correctness tests passed!\n\n");
 
   // Create a few bloom filters to test PERFORMANCE: this part should
   //     compute and return a performance score between 0 and 100 that
   //     assesses how bad or good a bloom filter implementation is
-
-  bloom_t B2 = bloom_new(500);
-
+  bloom_t B2 = bloom_new(200000);
   for (int i = 0; i < 100; i++) {
-	string s = string_fromint(i);
-	bloom_add(B2, s);
+    string s = string_fromint(i);
+    bloom_add(B2, s);
   }
 
   int false_positives = 0;
   for (int i = 1000; i < 1100; i++) {
-	  string s = string_fromint(i);
-	  if (bloom_contains(B2, s))
-		  false_positives++;
+    string s = string_fromint(i);
+    if (bloom_contains(B2, s))
+      false_positives++;
   }
 
   int perf_score = 100 - false_positives;
-
   printf("Returning the performance score.\n");
   return perf_score;
 }

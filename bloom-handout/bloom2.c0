@@ -1,0 +1,134 @@
+#use <conio>
+#use <string>
+#use <util>
+
+// ***************** 
+// 	 HASH FUNCTION
+// *****************
+
+int hash1(string s)
+{
+  int result = 0;
+  int len = string_length(s);
+
+  for(int i = 0; i < len; i++)
+    //@loop_invariant 0 <= i && i <= len;
+    // loop_invariant result equals to the hash_mul31 of string_sub(s, 0, i);
+    {
+      result = result * 31 + char_ord(string_charat(s, i));
+    }
+  return result;
+}
+
+int hash2(string s) {
+  int h = -2128831035; // FNV offset basis (0x811C9DC5)
+  int len = string_length(s);
+
+  for (int i = 0; i < len; i++) {
+		// XOR the bottom byte
+		h = h ^ char_ord(string_charat(s, i));
+		// Multiply by FNV prime (16777619)
+		h = h * 16777619;
+  }
+  return h;
+}
+
+// ***************** 
+//   PACKING BITS
+// ***************** 
+
+bool get_bit(int[] A, int i)
+//@requires 0 <= i && i / 32 < \length(A);
+{
+	int index = i / 32;
+	int bit_shift = i % 32;
+	return 1 == ((A[index] >> bit_shift) & 1);
+}
+
+void set_bit(int[] A, int i)
+//@requires 0 <= i && i / 32 < \length(A);
+//@ensures get_bit(A, i);
+{
+	int index = i / 32;
+	int bit_shift = i % 32;
+	A[index] |= (1 << bit_shift);
+	return;
+}
+
+// ***************** 
+// 	 BLOOM FILTER 
+// *****************
+
+typedef struct bloom_filter bloom;
+struct bloom_filter {
+	int limit; 		  // limit < int_max()/8
+	int[] data;			// limit == \length(data);
+};
+
+bool is_bloom(bloom* B) {
+	return B != NULL
+		&& B->limit > 0
+		&& B->limit < (int_max() / 8);
+}
+
+bloom* bloom_new(int limit) 
+//@requires 0 < limit && limit < int_max()/8;
+//@ensures is_bloom(\result);
+{
+	bloom* B = alloc(bloom);
+	B->limit = (limit + 31) / 32;
+	B->data = alloc_array(int, B->limit);
+	return B;
+}
+
+bool bloom_contains(bloom* B, string x)
+//@requires is_bloom(B);
+{
+	int len = B->limit * 32;
+	int h1 = abs(hash1(x) % len);
+	int h2 = abs(hash2(x) % len);
+	int index1 = h1;
+	int index2 = (h1 + h2) % len;
+	int index3 = (h1 + 2 * h2) % len;
+
+	return get_bit(B->data, index1)
+			&& get_bit(B->data, index2)
+			&& get_bit(B->data, index3);
+}
+
+void bloom_add(bloom* B, string x)
+//@requires is_bloom(B);
+//@ensures bloom_contains(B, x);
+{
+	int len = B->limit * 32;
+	int h1 = abs(hash1(x) % len);
+	int h2 = abs(hash2(x) % len);
+	int index1 = h1;
+	int index2 = (h1 + h2) % len;
+	int index3 = (h1 + 2 * h2) % len;
+
+	set_bit(B->data, index1);
+	set_bit(B->data, index2);
+	set_bit(B->data, index3);
+	return;
+}
+
+typedef bloom* bloom_t;
+
+// ***************** 
+// 	    TESTING
+// *****************
+
+/*
+int main() {
+	print("Running some tests... \n");
+
+	bloom_t B1 = bloom_new(5);
+
+	//@assert is_bloom(B1);
+
+	print("All tests passed!\n");
+	return 0;
+}
+*/
+

@@ -4,13 +4,71 @@
 /**************************************************************************/
 #use <conio>
 
+
 int main() {
-  // Create a few arrays of integers
+	// Test 1: Single integer array (32 bits)
+	int[] arr1 = alloc_array(int, 1);
 
-  // Using them, test the functions test get_bit and set_bit
+	// Initially all bits should be 0
+	for (int i = 0; i < 32; i++)
+	//@loop_invariant 0 <= i && i <= 32;
+	{
+			assert(!get_bit(arr1, i));
+	}
 
+	// Set some bits and verify
+	set_bit(arr1, 0);
+	assert(get_bit(arr1, 0));
 
+	set_bit(arr1, 15);
+	assert(get_bit(arr1, 15));
 
-  printf("All tests passed!\n");
-  return 0;
+	set_bit(arr1, 31);
+	assert(get_bit(arr1, 31));
+
+	// Verify other bits are still 0
+	assert(!get_bit(arr1, 1));
+	assert(!get_bit(arr1, 16));
+
+	// Test 2: Multiple integer array (64 bits)
+	int[] arr2 = alloc_array(int, 2);
+
+	// Set bits in first integer
+	set_bit(arr2, 5);
+	assert(get_bit(arr2, 5));
+
+	// Set bits in second integer
+	set_bit(arr2, 32);  // First bit of second int
+	assert(get_bit(arr2, 32));
+
+	set_bit(arr2, 50);
+	assert(get_bit(arr2, 50));
+
+	set_bit(arr2, 63);  // Last bit
+	assert(get_bit(arr2, 63));
+
+	// Test 3: Larger array
+	int[] arr3 = alloc_array(int, 4);
+
+	// Set bits across different integers
+	set_bit(arr3, 0);
+	set_bit(arr3, 32);
+	set_bit(arr3, 64);
+	set_bit(arr3, 96);
+
+	assert(get_bit(arr3, 0));
+	assert(get_bit(arr3, 32));
+	assert(get_bit(arr3, 64));
+	assert(get_bit(arr3, 96));
+
+	// Test 4: Setting same bit multiple times
+	int[] arr4 = alloc_array(int, 1);
+	set_bit(arr4, 10);
+	set_bit(arr4, 10);
+	set_bit(arr4, 10);
+	assert(get_bit(arr4, 10));
+
+	println("All tests passed!");
+	return 0;
 }
+
