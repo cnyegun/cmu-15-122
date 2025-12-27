@@ -11,7 +11,9 @@ int main() {
   // Create a password database and check a few passwords against it.
   // Use pwd_stats to make sure the stats are updated correctly.
 
-
+	pwd_t P = pwd_new(100, "20-badpwd.txt");
+	//@assert pwd_check(P, "leleleledjsf") == 2;
+	//@assert pwd_check(P, "password") == 0;
 
   printf("All correctness tests passed!\n\n");
   return 0;
