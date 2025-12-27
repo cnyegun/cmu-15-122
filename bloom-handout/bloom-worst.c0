@@ -33,6 +33,7 @@ void bloom_add(int* B, string x)
 //@ensures is_bloom(B);
 //@ensures bloom_contains(B, x);
 {
+  // does nothing LOL 
   return;
 }
 

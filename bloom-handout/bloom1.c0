@@ -1,0 +1,12 @@
+#use <conio>
+#use <util>
+
+typedef struct bloom_filter bloom;
+struct bloom_filter {
+	int capacity;   // capacity < int_max()/4
+	bool[] data;	// capacity == \length(data);
+};
+
+bool is_bloom(bloom* B)
+/*@requires B != NULL; @*/
+
