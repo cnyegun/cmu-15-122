@@ -1,0 +1,29 @@
+
+
+
+
+
+
+bipush 0 							0
+vstore 0							.				total = 0
+bipush 0 							0
+vstore 1							.				total = 0, i = 0
+
+vload 1								0
+bipush 100						0, 100
+if_cmplt 00 07 				.
+vload 0								total
+return
+vload 1								i
+bipush 2							i, 2
+irem									i % 2
+bipush 1							i % 2, 1 
+if_cmpeq 00 03 				.
+goto FF EC						
+vload 0 							total 
+vload 1								total, i
+iadd									total + i
+vstore 0							.
+goto FF E2						
+vload 0								total
+return 

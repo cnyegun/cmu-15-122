@@ -1,0 +1,6 @@
+int main() {
+	int x = 0xbeef;
+	string s1 = "Hello";
+	string s2 = "World";
+	return x + 0xfeed;
+}

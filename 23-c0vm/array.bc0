@@ -1,0 +1,62 @@
+C0 C0 FF EE       # magic number
+00 17             # version 11, arch = 1 (64 bits)
+
+00 00             # int pool count
+# int pool
+
+00 00             # string pool total size
+# string pool
+
+00 01             # function count
+# function_pool
+
+#<main>
+00                # number of arguments = 0
+02                # number of local variables = 2
+00 2D             # code length = 45 bytes
+# Push 100 to the stack
+10 64    # bipush 100         # 100
+# Pops 100 from the stack and multiply it by 4. 
+# Allocates 400 bytes from the heap push the address back on the stack
+BC 04    # newarray 4         # alloc_array(int, 100)
+# Store the address of the array to V
+36 00    # vstore 0           # A = alloc_array(int, 100);
+# Push 0 to the stack
+10 00    # bipush 0           # 0
+# Store 0 to the V with name i
+36 01    # vstore 1           # i = 0;
+# <00:loop>
+15 01    # vload 1            # i
+10 64    # bipush 100         # 100
+A1 00 06 # if_icmplt +6       # if (i < 100) goto <01:body>
+A7 00 15 # goto +21           # goto <02:exit>
+# <01:body>
+15 00    # vload 0            # A
+# Load the index
+15 01    # vload 1            # i
+# Calculate the offset address
+63       # aadds              # &A[i]
+15 01    # vload 1            # i
+# Write i to the memory &A[i]
+4E       # imstore            # A[i] = i;
+15 01    # vload 1            # i
+10 01    # bipush 1           # 1
+60       # iadd               # 
+# Store i = i + 1 to the V array
+36 01    # vstore 1           # i += 1;
+A7 FF E7 # goto -25           # goto <00:loop>
+# <02:exit>
+# Loads the array address
+15 00    # vload 0            # A
+# Push 99 to the stack
+10 63    # bipush 99          # 99
+# Calculate the address of the last element of the array A
+63       # aadds              # &A[99]
+# Read from memory address &A[99] to the stack
+2E       # imload             # A[99]
+# return it
+B0       # return             # 
+
+00 00             # native count
+# native pool
+

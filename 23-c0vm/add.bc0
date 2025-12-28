@@ -1,0 +1,40 @@
+C0 C0 FF EE       # magic number
+00 17             # version 11, arch = 1 (64 bits)
+
+00 00             # int pool count
+# int pool
+
+00 00             # string pool total size
+# string pool
+
+00 02             # function count
+# function_pool
+
+#<main>
+00                # number of arguments = 0
+00                # number of local variables = 0
+00 08             # code length = 8 bytes
+10 05    # bipush 5           # 5
+10 03    # bipush 3           # 3
+B8 00 01 # invokestatic 1     # add(5, 3)
+B0       # return             # 
+
+1. creates a new local V for add()
+2. pops 5 and 3 out of main's stack to the add fn V local
+3. push frame {stack, local V, exec location} to the call frame.
+4. executes the function add with its own stack and local V, then returns
+5. pops the frame out of the call frame, push the result of add to main's stack.
+6. continue execute code at the previous saved location 
+
+#<add>
+02                # number of arguments = 2
+02                # number of local variables = 2
+00 06             # code length = 6 bytes
+15 00    # vload 0            # a
+15 01    # vload 1            # b
+60       # iadd               # (a + b)
+B0       # return             # 
+
+00 00             # native count
+# native pool
+

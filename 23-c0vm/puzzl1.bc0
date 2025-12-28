@@ -1,0 +1,10 @@
+
+
+
+vload 0								a
+vload 1								a, b
+if_icmgt 00 06				.
+load 1								b
+return 								.
+vload 0								a
+return								.

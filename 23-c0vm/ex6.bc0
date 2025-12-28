@@ -1,0 +1,22 @@
+#<main>
+00 # number of arguments = 0
+01 # number of local variables = 1
+00 1E # code length = 30 bytes
+BB 08 # new 8 # alloc(rect)
+36 00 # vstore 0 # r = alloc(rect);
+_____ # vload 0	 # r
+62 00 # aaddf 0  # &r->width
+_____ # bipush 5 # 5
+4E 		# imstore # r->width = 5;
+15 00 # vload 0 # r
+62 04 # aaddf 4 # &r->height
+10 0A # bipush 10 # 10
+_____ # imstore # r->height = 10;
+15 00 # vload 0 # r
+62 00 # aaddf 0 # &r->width
+2E # imload # r->width
+15 00 # vload 0 # r
+_____ # aaddf 4 # &r->height
+_____ # imload # r->height
+68 # imul # (r->width * r->height)
+B0 # return

@@ -1,0 +1,26 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# V = [lo, hi, mid, ...]
+
+vload 0					lo
+vload 1					lo, hi
+vload 0					lo, hi, lo
+isub						lo, hi - lo 
+bipush 2				lo, hi - lo, 2
+idiv						lo, (hi - lo) / 2
+iadd 						lo + (hi - lo) / 2
+vstore					[]
+vload 2					mid
+return					

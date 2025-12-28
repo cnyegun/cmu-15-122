@@ -1,0 +1,15 @@
+
+
+
+bipush 15					15
+bipush 122				15, 122
+imul							1830	
+vstore 0					.				x = 1830
+vload 0						1830
+bipush 1					1830, 1
+ishr							915
+vstore 1					. 			x = 1830, y = 915
+vload 0						1830	
+vload 1						1830, 915
+isub							915
+return						.
