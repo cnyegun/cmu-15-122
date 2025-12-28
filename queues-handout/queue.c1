@@ -8,6 +8,8 @@
  * 15-122 Principles of Imperative Computation
  */
 
+#use <conio>
+
 /************************************************************************/
 /**************************** Client Interface **************************/
 
@@ -23,7 +25,7 @@ typedef void* iterate_fn(void* accum, void* x);
 
 typedef struct list_node list;
 struct list_node {
-  void* data;
+  void* data; // Could be NULL
   list* next;
 };
 
@@ -35,13 +37,19 @@ struct queue_header {
 };
 
 bool is_inclusive_segment(list* start, list* end, int i) {
-  /* FIX ME */
-  return true;
+	// Base case: empty segment
+	if (start == NULL) 
+		return i == 0; 
+	// Size = 1
+	if (start == end) 
+		return (start->next == NULL && i == 1);
+	// Recursive case
+	return is_inclusive_segment(start->next, end, i - 1);
 }
 
 bool is_queue(queue* Q) {
-  /* FIX ME */
-  return Q != NULL;
+  return Q != NULL
+			&& is_inclusive_segment(Q->front, Q->back, Q->size);
 }
 
 void print_queue(queue* Q, print_data_fn* print_data) {
@@ -51,6 +59,115 @@ void print_queue(queue* Q, print_data_fn* print_data) {
 
 /* Other functions go there */
 
+// Returns a empty queue
+queue* queue_new()
+//@ensures is_queue(\result);
+{
+	queue* Q = alloc(queue);
+	Q->front = NULL;
+	Q->back = NULL;
+	Q->size = 0;
+	return Q;
+}
+
+int queue_size(queue* Q) 
+/*@requires is_queue(Q); @*/
+/*@ensures \result >= 0; @*/
+{
+	return Q->size;
+}
+
+// add an item to the back of the queue O(1)
+void enq(queue* Q, void* x) 
+//@requires is_queue(Q);
+//@ensures is_queue(Q);
+{
+	// Base case: Q is empty ---> front = back = x and Q->size = 1;
+	if (Q->front == NULL) {
+		Q->front = alloc(list);
+		Q->front->data = x;
+		Q->front->next = NULL;
+		Q->back = Q->front;
+		Q->size++;
+		return;
+	}
+	// Regular case: create a new list_node
+	// 							 point the tail->next to this new node
+	// 							 point the tail to this new node
+	list* new_node = alloc(list);
+	new_node->data = x;
+	new_node->next = NULL;
+	Q->back->next = new_node;
+	Q->back = new_node;
+	Q->size++;
+}
+
+void* deq(queue* Q) 
+//@requires is_queue(Q) && queue_size(Q) > 0;
+//@ensures is_queue(Q);
+{
+	// Base case: size = 1
+	if (Q->size == 1) {
+		void* result = Q->front->data;
+		Q->front = NULL;
+		Q->back = NULL;
+		Q->size = 0;
+		return result;
+	}
+	void* result = Q->front->data;
+	Q->front = Q->front->next;
+	Q->size--;
+	return result;
+}
+
+void* queue_peek(queue* Q, int i)
+//@requires is_queue(Q) && 0 <= i && i < queue_size(Q);
+//@ensures is_queue(Q);
+{
+	list* p = Q->front;
+	for (int j = 0; j < i; j++) {
+		p = p->next;
+	}
+	return p->data;
+}
+
+void queue_reverse(queue* Q) 
+//@requires is_queue(Q);
+//@ensures is_queue(Q);
+{
+	list* prev = NULL;
+	list* foll = NULL;
+
+	for (list* curr = Q->front; curr != NULL; curr = foll) {
+		foll = curr->next;
+		curr->next = prev;
+		prev = curr;
+	}
+
+	Q->back = Q->front;
+	Q->front = prev;
+}
+
+/* O(n) worst case; assuming P is O(1) */
+bool queue_all(queue* Q, check_property_fn* P) 
+//@requires is_queue(Q) && P != NULL;
+{
+	for (list* p = Q->front; p != NULL; p = p->next) {
+		if (!(*P)(p->data))
+			return false;
+	}
+	return true;
+}
+
+void* queue_iterate(queue* Q, void* base, iterate_fn* F)
+//@requires is_queue(Q) && F != NULL;
+{
+	void* acc = base;
+	for (list* p = Q->front; p != NULL; p = p->next) {
+		acc = (*F)(acc, p->data);
+	}
+	return acc;
+}
 
 // Client type
 typedef queue* queue_t;
@@ -95,3 +212,4 @@ bool queue_all(queue_t Q, check_property_fn* P)
 /* O(n) worst case, assuming F is O(1) */
 void* queue_iterate(queue_t Q, void* base, iterate_fn* F)
   /*@requires Q != NULL && F != NULL; @*/ ;
+

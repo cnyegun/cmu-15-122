@@ -1,0 +1,135 @@
+// include <queue.c1>
+
+void* int_to_voidptr(int n) {
+	int* r = alloc(int);
+	*r = n;
+	return (void*) r;
+}
+
+bool even(void* x) 
+//@requires x == NULL || \hastag(int*,x);
+{
+	return (x != NULL && *(int*)x % 2 == 0);
+}
+
+void* sum(void* accum, void* x) 
+//@requires x == NULL || \hastag(int*,x);
+//@requires accum == NULL || \hastag(int*,accum);
+{
+	if (accum == NULL) {
+		int* r = alloc(int);
+		*r = *(int*) x; 
+		return (void*) r;
+	}
+	if (x == NULL) return accum;
+	int* result = (int*) accum;
+	*result += *(int*)x;
+	return (void*) result;
+}
+
+bool print_all(void* x)
+//@requires x == NULL || \hastag(int*, x);
+{
+	if (x == NULL) return true;
+	printf("%d ", *(int*) x);
+	return true;
+}
+
+bool incr(void* x)
+//@requires x == NULL || \hastag(int*, x);
+{
+	if (x == NULL) return true;
+	*(int*) x += 1;
+	return true;
+}
+
+void* find_negative(void* accum, void* x)
+//@requires accum == NULL || \hastag(int*, accum);
+//@requires x == NULL || \hastag(int*, x);
+//@ensures \hastag(int*, \result);
+{
+	if (x == NULL) return NULL;
+	if (*(int*) x < 0) return x;
+	return accum;
+}
+
+void* copy(void* accum, void* x)
+//@requires accum != NULL && \hastag(queue_t, accum);
+//@ensures \hastag(queue_t, \result);
+{
+	enq((queue_t)accum, x);
+	return accum;
+}
+
+void* insert(void* x, void* y)
+//@requires x != NULL && y != NULL;
+//@requires \hastag(int*,x) && \hastag(int*, y);
+{
+	int valx = *(int*) x;
+	int valy = *(int*) y;
+	if (*(int*) y > *(int*) x) {
+		*(int*) x = valy;
+		*(int*) y = valx;
+	}
+	return x;
+}
+
+int main() {
+	// Test for even();
+	queue_t Q1 = queue_new();
+	enq(Q1, int_to_voidptr(4));	
+	enq(Q1, int_to_voidptr(6));	
+	enq(Q1, int_to_voidptr(2));	
+	//@assert queue_all(Q1, &even);
+	enq(Q1, NULL);
+	//@assert !queue_all(Q1, &even);
+
+	// Test for sum();
+	//@assert *(int*) queue_iterate(Q1, NULL, &sum) == 12;
+
+	// Test for incr():
+
+	queue_all(Q1, &print_all);
+	print("\nAfter increase: \n");
+	queue_all(Q1, &incr);
+	queue_all(Q1, &print_all);
+	print("\n");
+
+	// Test for find_negative():
+	//@assert queue_iterate(Q1, NULL, &find_negative) == NULL;
+	enq(Q1, int_to_voidptr(-6234));
+	//@assert *(int*) queue_iterate(Q1, NULL, &find_negative) == -6234;
+	
+	// Test for copy();
+	queue_t Q2 = (queue_t) queue_iterate(Q1, (void*) queue_new(), &copy);
+
+	queue_all(Q1, &print_all);
+	print("\nCopy: \n");	
+	queue_all(Q2, &print_all);
+	print("\n");
+	
+	queue_t Q = queue_new();
+	enq(Q, int_to_voidptr(4));	
+	enq(Q, int_to_voidptr(6));	
+	enq(Q, int_to_voidptr(0));	
+	enq(Q, int_to_voidptr(8));	
+	enq(Q, int_to_voidptr(2));	
+	enq(Q, int_to_voidptr(5));	
+	queue_t R = queue_new();
+	while (queue_size(Q) > 0) {
+		int* p1 = alloc(int);
+		void* p2 = deq(Q);
+		//@assert p2 != NULL && \hastag(int*, p2);
+		*p1 = *(int*)p2;
+		queue_iterate(R, (void*)p1, &insert);
+		enq(R,(void*)p1);
+	}
+
+	print("Sorted: \n");	
+	queue_all(R, &print_all);
+	print("\n");
+
+	print("All tests passed!\n");
+
+	return 0;
+}

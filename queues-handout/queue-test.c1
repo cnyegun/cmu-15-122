@@ -6,12 +6,205 @@
 
 // You are welcome to define helper functions for your tests
 
+void* int_to_voidptr(int n) {
+	int* r = alloc(int);
+	*r = n;
+	return (void*) r;
+}
+
+void test_is_segment() {
+	// 1) base case:
+	list* head1 = NULL;
+	list* tail1 = NULL; // doesn't matter what value 
+	int size1 = 0;
+
+	//@assert is_inclusive_segment(head1, tail1, size1);
+
+	// 2) regular case:
+	list* head2 = alloc(list);
+	list* body2 = alloc(list);
+	list* tail2 = alloc(list);
+	int 	size2 = 3;
+
+	head2->data = int_to_voidptr(8);
+	head2->next = body2;
+	body2->data = int_to_voidptr(5);
+	body2->next = tail2;
+	tail2->data = int_to_voidptr(15);
+	tail2->next = NULL;
+
+	//@assert is_inclusive_segment(head2, tail2, size2);
+
+	// 3) start=end case:
+	list* head3 = alloc(list);
+	list* tail3 = head3;
+	int 	size3 = 1;
+
+	head3->data = int_to_voidptr(67);
+	head3->next = NULL;
+
+	//@assert is_inclusive_segment(head3, tail3, size3);
+
+	// 4) Tail not reachable case:
+	list* head4 = alloc(list);
+	list* body4 = alloc(list);
+	list* tail4 = alloc(list);
+	int 	size4 = 3;
+
+	head4->data = int_to_voidptr(3);
+	head4->next = body4;
+	body4->data = int_to_voidptr(5);
+	body4->next = NULL;
+	tail4->data = int_to_voidptr(8);
+	tail4->next = NULL;
+
+	//@assert is_inclusive_segment(head4, tail4, size4) == false;
+	print("is_inclusive_segment() good!\n");
+}
+
+void test_is_queue() {
+	// Copy from is_segment test 2) regular case
+	list* head2 = alloc(list);
+	list* body2 = alloc(list);
+	list* tail2 = alloc(list);
+	int 	size2 = 3;
+
+	head2->data = int_to_voidptr(8);
+	head2->next = body2;
+	body2->data = int_to_voidptr(5);
+	body2->next = tail2;
+	tail2->data = int_to_voidptr(15);
+	tail2->next = NULL;
+
+	queue* Q = alloc(queue);
+	Q->front = head2;
+	Q->back = tail2;
+	Q->size = size2;
+	//@assert is_queue(Q);
+	print("is_queue() good!\n");
+}
+
+void test_queue_new() {
+	queue_t Q = queue_new();
+	//@assert is_queue(Q);
+	print("queue_new() good!\n");
+}
+
+void test_enq() {
+	// Base case:
+	queue_t Q_base = queue_new();
+	enq(Q_base, int_to_voidptr(67));
+	//@assert *(int*)Q_base->back->data == 67;
+
+	// Regular case:
+	list* head2 = alloc(list);
+	list* body2 = alloc(list);
+	list* tail2 = alloc(list);
+	int 	size2 = 3;
+
+	head2->data = int_to_voidptr(8);
+	head2->next = body2;
+	body2->data = int_to_voidptr(5);
+	body2->next = tail2;
+	tail2->data = int_to_voidptr(15);
+	tail2->next = NULL;
+
+	queue* Q = alloc(queue);
+	Q->front = head2;
+	Q->back = tail2;
+	Q->size = size2;
+
+	enq(Q, int_to_voidptr(58));
+	//@assert *(int*)body2->next->data == 15;
+	//@assert *(int*)body2->next->next->data == 58;
+	//@assert *(int*)Q->back->data == 58;
+	print("enq() good!\n");
+}
+
+void test_deq() {
+	// Base case: size = 1
+	queue_t Q_base = queue_new();
+	enq(Q_base, int_to_voidptr(67));
+	//@assert *(int*)Q_base->back->data == 67;
+
+	int* result1 = (int*)deq(Q_base);
+	//@assert *result1 == 67;
+	//@assert Q_base->front == NULL;
+	//@assert Q_base->back == NULL;
+	//@assert Q_base->size == 0;
+
+	// Regular case:
+	list* head2 = alloc(list);
+	list* body2 = alloc(list);
+	list* tail2 = alloc(list);
+	int 	size2 = 3;
+
+	head2->data = int_to_voidptr(8);
+	head2->next = body2;
+	body2->data = int_to_voidptr(5);
+	body2->next = tail2;
+	tail2->data = int_to_voidptr(15);
+	tail2->next = NULL;
+
+	queue* Q = alloc(queue);
+	Q->front = head2;
+	Q->back = tail2;
+	Q->size = size2;
+	
+	int* result2 = (int*)deq(Q);
+	//@assert *result2 == 8;
+	//@assert Q->size == 2;
+	int* result3 = (int*)deq(Q);
+	//@assert *result3 == 5;
+	//@assert Q->size == 1;
+	int* result4 = (int*)deq(Q);
+	//@assert *result4 == 15;
+	//@assert Q->size == 0;
+	//@assert Q->front == NULL;
+	//@assert Q->back == NULL;
+
+	print("deq() good!\n");
+}
+
+void test_peek() {
+	queue_t Q = queue_new();
+	enq(Q, int_to_voidptr(67));
+	enq(Q, int_to_voidptr(5));
+	enq(Q, int_to_voidptr(8));
+	enq(Q, int_to_voidptr(23));
+	//@assert *(int*) queue_peek(Q, 0) == 67;
+	//@assert *(int*) queue_peek(Q, 3) == 23;
+	//@assert *(int*) queue_peek(Q, 2) == 8;
+	//@assert *(int*) queue_peek(Q, 1) == 5;
+	print("peek() good!\n");
+}
+
+void test_reverse() {
+	queue_t Q = queue_new();
+	enq(Q, int_to_voidptr(67));
+	enq(Q, int_to_voidptr(5));
+	enq(Q, int_to_voidptr(8));
+	enq(Q, int_to_voidptr(23));
+	queue_reverse(Q);
+	//@assert *(int*) queue_peek(Q, 0) == 23;
+	//@assert *(int*) queue_peek(Q, 1) == 8;
+	//@assert *(int*) queue_peek(Q, 2) == 5;
+	//@assert *(int*) queue_peek(Q, 3) == 67;
+	print("reverse() good!\n");
+}
+
 int main() {
   // Create a few queues
 
   // Using them, test the functions you wrote in file queue.c1
 
-
+	test_is_segment();
+	test_is_queue();
+	test_queue_new();
+	test_enq();
+	test_deq();
+	test_peek();
+	test_reverse();
 
   printf("All tests passed!\n");
   return 0;

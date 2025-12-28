@@ -1,0 +1,9 @@
+#use <conio>
+
+int main() {
+	int* b = alloc(int);
+	*b = 67;
+	void* a = (void*)b;
+	printf("%d\n", *(int*)a);
+	return 0;
+}
