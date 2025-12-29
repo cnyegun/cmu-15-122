@@ -22,6 +22,9 @@ void graph_addedge(graph_t G, vertex v, vertex w);
 //@requires v < graph_size(G) && w < graph_size(G);
 //@requires v != w && !graph_hashedge(G, v, w);
 
+void graph_free(graph_t G);
+//@requires G != NULL;
+
 typedef struct neighbor_header *neighbors_t;
 
 neighbors_t graph_get_neighbors(graph_t G, vertex v);

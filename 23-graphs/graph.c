@@ -58,14 +58,14 @@ void graph_addedge(graph *G, vertex v, vertex w)
 	adjlist *new_edge;
 
 	new_edge = malloc(sizeof *new_edge);
-	new_edge->vert = v;
-	new_edge->next = G->adj[w];
-	G->adj[w] = new_edge;
-
-	new_edge = malloc(sizeof *new_edge);
 	new_edge->vert = w;
 	new_edge->next = G->adj[v];
 	G->adj[v] = new_edge;
+
+	new_edge = malloc(sizeof *new_edge);
+	new_edge->vert = v;
+	new_edge->next = G->adj[w];
+	G->adj[w] = new_edge;
 }
 
 struct neighbor_header {
@@ -105,4 +105,17 @@ void graph_free_neighbors(neighbors *nbors) {
 	free(nbors);
 }
 
+void graph_free(graph *G) 
+//@requires is_graph(G);
+{
+	for (unsigned int i = 0; i < G->size; i++) {
+		for (adjlist *p = G->adj[i]; p != NULL;) {
+			adjlist* prev = p;
+			p = p->next;
+			free(prev);
+		}
+	}
+	free(G->adj);
+	free(G);
+}
 
