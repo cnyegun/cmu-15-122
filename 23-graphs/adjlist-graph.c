@@ -71,6 +71,7 @@ void graph_addedge(graph *G, vertex v, vertex w)
 struct neighbor_header {
 	adjlist *next_neighbor;
 };
+
 typedef struct neighbor_header neighbors;
 
 bool is_neighbors(neighbors *nbors) {
