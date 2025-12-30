@@ -1,0 +1,22 @@
+
+
+int password4(int n) {
+	int b = n;
+	for (int i = 0; i < 3; i++) {
+		b = b << 1;
+	}
+	if (b == 0x3D0) {
+		return 1;
+	}
+	return 0;
+}
+
+int func5(string a, string b) {
+	return string_equal(a, b);
+}
+
+int password5(string a) {
+	if (func5(a, "the interface") == 1)
+		return true;
+	return 0;
+}
